@@ -10,9 +10,8 @@ from .utils import MyJSONEncoder, ColoredLevelFormatter
 from flask import Flask, jsonify
 from flask_cors import CORS
 
-
 import logging
-
+import traceback
 logger = logging.getLogger(__name__)
 
 server2 = WebSocketServer(9001)
@@ -34,18 +33,18 @@ from threading import Thread
 def create_app(test_config=None):
     app = Flask(__name__)
 
-    CORS(app, resources=r'/*')
+    CORS(app, resources={r'/*': {'supports_credentials': True}})
 
     setup_logging(app)
 
-    ws = Thread(target=run_ws)
+    ws = Thread(target=run_ws, daemon=True)
     ws.start()
 
     app.json_encoder = MyJSONEncoder
     app.debug = True
     app.config.from_mapping(
         SECRET_KEY='dev',
-        SQLALCHEMY_DATABASE_URI='mysql+pymysql://root:root@127.0.0.1:3306/pytest?charset=utf8',
+        SQLALCHEMY_DATABASE_URI='mysql+pymysql://root:root@127.0.0.1:3306/shoot?charset=utf8',
         SQLALCHEMY_POOL_RECYCLE=1800,
         SQLALCHEMY_POOL_TIMEOUT=1500,
         SQLALCHEMY_ENGINE_OPTIONS={'pool_pre_ping': True},
@@ -56,6 +55,7 @@ def create_app(test_config=None):
     @app.errorhandler(Exception)
     def handle_runtime_error(e):
         app.logger.error('{}'.format(e))
+        traceback.print_exc()
         return jsonify(Result.fail(msg='未知异常'))
 
     @app.errorhandler(ResultError)
@@ -72,8 +72,14 @@ def create_app(test_config=None):
     from .api.user import api
     app.register_blueprint(api)
 
-    from .api.order import api as order_api
-    app.register_blueprint(order_api)
+    from .api.shooter import api
+    app.register_blueprint(api)
+
+    from .api.trainer import api
+    app.register_blueprint(api)
+
+    from .api.train_record import api
+    app.register_blueprint(api)
 
     from .api.auth import bp
     app.register_blueprint(bp)

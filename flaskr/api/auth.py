@@ -10,7 +10,7 @@ from flaskr.models import Base, User, Result
 
 db = Base.get_db()
 
-bp = Blueprint('auth', __name__, url_prefix='')
+bp = Blueprint('auth', __name__, url_prefix='/api')
 
 
 @bp.route('/register', methods=('GET', 'POST'))
@@ -56,11 +56,15 @@ def login():
         if error is None:
             session.clear()
             session['user_id'] = user.id
-            return jsonify(Result.success(msg='login successful'))
+            return jsonify(Result.success(msg='login successful',data={'token': 'logged in'}))
 
         flash(error)
     return jsonify(Result.fail(msg='login failed'))
 
+
+@bp.route('/get-info')
+def get_info():
+    return jsonify(Result.success(data={'roles':['admin']}))
 
 @bp.before_app_request
 def load_logged_in_user():

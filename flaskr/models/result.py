@@ -11,11 +11,11 @@ class Result:
         return {"code": self.code, "msg": self.msg, "data": self.data}
 
     @classmethod
-    def success(cls, code: int = 200, msg: str = 'success', data=None):
+    def success(cls, code: int = 20000, msg: str = 'success', data=None):
         return Result(code, msg, data).to_dict()
 
     @classmethod
-    def fail(cls, code: int = 400, msg: str = 'fail', data=None):
+    def fail(cls, code: int = 40000, msg: str = 'fail', data=None):
         return Result(code, msg, data).to_dict()
 
     @classmethod
