@@ -5,6 +5,7 @@ from sqlalchemy.exc import IntegrityError, DataError, DatabaseError
 
 from flaskr.exception import ResultError
 from .serializer import Serializer
+from ..utils import StyleFormatter
 
 db = SQLAlchemy()
 
@@ -209,7 +210,8 @@ class Base(db.Model, Serializer):
         :param params: 范围查询参数
         :return: 拼接完成范围查询filter后的query对象
         """
-        for k, v in params.items():
+        converted = StyleFormatter.camel_to_snake_dict(params)
+        for k, v in converted.items():
             split = k.split('_', 1)
             prefix = split[0]
             column = split[1]

@@ -1,9 +1,8 @@
-import sqlalchemy
-from sqlalchemy import Column, Integer, String, DateTime, Double, false, ForeignKey
-from sqlalchemy.exc import IntegrityError
-from werkzeug.security import generate_password_hash
+from sqlalchemy import Column, String, DateTime, ForeignKey
+
+from flaskr.models.Shooter import Shooter
 from .base import Base, db
-from flaskr.exception import ResultError
+from .user import User
 
 
 class TrainRecord(Base):
@@ -15,10 +14,16 @@ class TrainRecord(Base):
     shoot_data_r = db.relationship('ShootData', backref='TrainRecord', lazy='dynamic')
     shoot_data_list = []
 
-    def serialize(self):
+    def serialize(self, to_camel=True):
         s = super().serialize()
-        s['shoot_data_list'] = self.serialize_list(self.order_list)
+        s['shoot_data_list'] = self.serialize_list(self.shoot_data_list)
+        if s['shooter'] is not None:
+            shooter: Shooter = s['shooter']
+            s['shooter_id'] = shooter.id
+            s['shooter_name'] = shooter.user.name
         del s['shoot_data_r']
+        if to_camel:
+            s = self.to_camel(s)
         return s
 
     @classmethod
@@ -33,6 +38,26 @@ class TrainRecord(Base):
         for record in records:
             record.shoot_data_list = record.shoot_data_r.all()
         return records
+
+    @classmethod
+    def page(cls, params):
+        page_num = int(params.get('pageNum', 1))
+        page_size = int(params.get('pageSize', 10))
+
+        query = db.session.query(TrainRecord).join(Shooter).join(User)
+
+        if cls.filter_dict(params).get('id') is not None:
+            query = query.filter(TrainRecord.id == params.get('id'))
+        if params.get('shooterId') is not None and len(params.get('shooterId')) > 0:
+            query = query.filter(Shooter.id == params.get('shooterId'))
+        if params.get('shooterName') is not None:
+            query = query.filter(User.name.like('%' + params.get('shooterName') + '%'))
+
+        range_param = cls.filter_range_params(dict(params))
+        query = cls.range_query_snippet(query, range_param)
+
+        page = query.paginate(page=page_num, per_page=page_size)
+        return page
 
     @classmethod
     def update(cls, data: dict, key='dataId', err_msg='未找到射击数据'):

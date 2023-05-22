@@ -23,7 +23,7 @@ def list_train_records():
 @login_required
 def page_train_records():
     page_info = TrainRecord.page_to_dict(request.args)
-    return jsonify(Result.success(page_info))
+    return jsonify(Result.success(data=page_info))
 
 
 @api.route('/get/<string:train_record_id>', methods=['GET'])
