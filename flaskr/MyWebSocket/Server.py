@@ -5,6 +5,8 @@ import websockets
 from websockets.legacy.server import WebSocketServerProtocol
 import logging
 
+from flaskr.MyWebSocket.ServerGroup import ServerGroup
+
 logger = logging.getLogger(__name__)
 
 
@@ -20,6 +22,7 @@ class WebSocketServer:
     async def start_server(self):
         try:
             self.server = await websockets.serve(self.handler, "", self.port)
+            ServerGroup.add(self)
         except OSError as e:
             if e.args[0] == 10048:
                 logger.warning('port already in bind')
@@ -80,10 +83,8 @@ class WebSocketServer:
                             f"current conns count: {self.connections.keys().__len__()}")
 
     async def broadcast(self, message):
-        if self.server and self.connections.get(self.port):
-            # 向指定端口的所有连接发送消息
-            for conn in self.connections[self.port]:
-                await conn.send(message)
+        for conn in self.connections.values():
+            await conn.send(message)
 
 
 async def main():

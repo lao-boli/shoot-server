@@ -12,14 +12,15 @@ from flask_cors import CORS
 
 import logging
 import traceback
+
 logger = logging.getLogger(__name__)
 
-server2 = WebSocketServer(9001)
+server = WebSocketServer(9001)
 
 
 async def main():
     await asyncio.gather(
-        server2.start_server(),
+        server.start_server(),
     )
 
 
@@ -28,6 +29,10 @@ def run_ws():
 
 
 from threading import Thread
+
+
+def get_ws():
+    return server
 
 
 def create_app(test_config=None):
@@ -79,6 +84,9 @@ def create_app(test_config=None):
     app.register_blueprint(api)
 
     from .api.train_record import api
+    app.register_blueprint(api)
+
+    from .api.device import api
     app.register_blueprint(api)
 
     from .api.auth import bp
