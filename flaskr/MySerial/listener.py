@@ -1,5 +1,6 @@
 import datetime
 import json
+import random
 
 from flaskr import ShootData
 import asyncio
@@ -22,6 +23,15 @@ class MyListener():
             ShootData.add_self(shoot_data)
 
         asyncio.run(ServerGroup.server.broadcast(json.dumps(coord, cls=MyJSONEncoder)))
+
+    @classmethod
+    def start(cls, train_record_id):
+        cls.reset()
+        cls.train_record_id = train_record_id
+
+    @classmethod
+    def stop(cls):
+        cls.reset()
 
     @classmethod
     def reset(cls):
@@ -59,7 +69,7 @@ class MyListener():
                 # region generate shoot data
                 shoot_data = ShootData()
                 shoot_data.sequence = cls.sequence
-                shoot_data.shoot_time = datetime.datetime.utcnow()
+                shoot_data.shoot_time = datetime.datetime.now()
                 shoot_data.hit_ring_number = int(raw[4]) / 10
                 shoot_data.aim_ring_number = int(raw[5]) / 10
                 shoot_data.gun_shaking = int(raw[6])
@@ -125,4 +135,8 @@ class MyListener():
 
 
 if __name__ == '__main__':
-    MyListener.decode([0x16, 0x10, 0x10, 0x01, 0x56, 0x24, 0x15, 0x56, 0x14, 0x18, 0x46, 0x55, 0x17, 0x00, 0x88])
+    r = random.randint(0, 0x64)
+    print(r)
+    arr = [0x16, 0x10, 0x10, 0x01, 0x56, 0x24, 0x15, 0x56, 0x14, 0x18, 0x46, 0x55, 0x17, 0x00, 0x88]
+    print(arr)
+    MyListener.decode(arr)

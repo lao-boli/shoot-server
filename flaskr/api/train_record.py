@@ -44,8 +44,15 @@ def get_train_record(train_record_id):
 def start_train():
     shooter_id = request.json['shooterId']
     train_record = TrainRecord.add({'shooter_id': shooter_id, 'train_time': datetime.now()})
-    MyListener.train_record_id = train_record.id
+    MyListener.start(train_record_id=train_record.id)
     return jsonify(Result.success(msg='开始训练', data=train_record.serialize()))
+
+
+@api.route('/stop', methods=['POST'])
+@login_required
+def stop_train():
+    MyListener.stop()
+    return jsonify(Result.success(msg='结束训练'))
 
 
 @api.route('/add', methods=['POST'])
