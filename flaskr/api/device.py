@@ -1,3 +1,5 @@
+import json
+
 from flask import (
     Blueprint, request, jsonify
 )
@@ -12,6 +14,10 @@ logger = logging.getLogger(__name__)
 api = Blueprint('device', __name__, url_prefix='/api/device')
 db = base.db
 
+from flaskr.MyWebSocket.ServerGroup import ServerGroup
+
+ws_server = ServerGroup.server
+
 
 @api.route('/test-decode', methods=['GET'])
 def test_decode():
@@ -19,67 +25,15 @@ def test_decode():
     return jsonify(Result.success(data='succ'))
 
 
-@api.route('/list', methods=['GET'])
-@login_required
-def list_shooters():
-    shooters = Shooter.list(request.args)
-    return jsonify(Result.success(data=Shooter.serialize_list(shooters)))
+@api.route('/online', methods=['GET'])
+def online():
+    dev_state = {'type': 'devState', 'gunOnline': True, 'targetOnline': True}
+    ws_server.broadcast(json.dumps(dev_state))
+    return jsonify(Result.success(data=dev_state))
 
 
-@api.route('/page', methods=['GET'])
-@login_required
-def page_shooters():
-    page_info = Shooter.page_to_dict(request.args)
-    return jsonify(Result.success(data=page_info))
+@api.route('/offline', methods=['GET'])
+def offline():
+    ws_server.broadcast(json.dumps({'type': 'devState', 'gunOnline': False, 'targetOnline': False}))
+    return jsonify(Result.success())
 
-
-@api.route('/get/<string:shooter_id>', methods=['GET'])
-@login_required
-def get_shooter(shooter_id):
-    shooter = Shooter.get_by_id(shooter_id)
-    if shooter is None:
-        return jsonify(Result.fail(msg='shooter not found'))
-    return jsonify(shooter.serialize())
-
-
-@api.route('/add', methods=['POST'])
-@login_required
-def add_shooter():
-    try:
-        with db.session.begin_nested():
-            User.add_no_commit(request.json)
-            Shooter.add_no_commit(request.json)
-        db.session.commit()
-    except Exception as e:
-        db.session.rollback()
-        logger.error(e)
-
-    return jsonify(Result.success(msg='添加射手成功'))
-
-
-@login_required
-@api.route('/update', methods=['POST'])
-def update_shooter():
-    shooter = Shooter.update(request.json)
-    return jsonify(Result.success(msg='更新用户成功'))
-
-
-@api.route('/delete/<int:shooter_id>', methods=['DELETE'])
-@login_required
-def delete_shooter(shooter_id):
-    shooter = Shooter.delete(shooter_id)
-    return jsonify(Result.success(msg='删除用户成功'))
-
-
-# not id
-
-@api.route('/get', methods=['GET'])
-@login_required
-def get_shooter_no_id():
-    return jsonify(Result.fail(msg='必须携带id'))
-
-
-@api.route('/delete', methods=['DELETE'])
-@login_required
-def delete_shooter_no_id():
-    return jsonify(Result.fail(msg='必须携带id'))
