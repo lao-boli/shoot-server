@@ -6,6 +6,7 @@ from flaskr import ShootData
 import asyncio
 
 from flaskr.MyWebSocket.ServerGroup import ServerGroup
+from flaskr.utils import StyleFormatter
 from flaskr.utils.MyJsonEncoder import MyJSONEncoder
 
 
@@ -22,7 +23,8 @@ class MyListener():
             shoot_data.record_id = cls.train_record_id
             ShootData.add_self(shoot_data)
 
-        asyncio.run(ServerGroup.server.broadcast(json.dumps(coord, cls=MyJSONEncoder)))
+        asyncio.run(
+            ServerGroup.server.broadcast(json.dumps(StyleFormatter.snake_to_camel_dict(coord), cls=MyJSONEncoder)))
 
     @classmethod
     def start(cls, train_record_id):
@@ -81,6 +83,7 @@ class MyListener():
 
                 coord.update(shoot_data.serialize())
                 cls.sequence += 1
+                print(shoot_data.serialize())
                 return coord, shoot_data
 
             print(coord)
@@ -108,10 +111,10 @@ class MyListener():
 
         score = shooting_accuracy * 0.344 + gun_stability * 0.34 + firing_stability * 0.316
 
-        shoot_data.shooting_accuracy = shooting_accuracy
-        shoot_data.gun_stability = gun_stability
-        shoot_data.fire_stability = firing_stability
-        shoot_data.score = score
+        shoot_data.shooting_accuracy = round(shooting_accuracy, 2)
+        shoot_data.gun_stability = round(gun_stability, 2)
+        shoot_data.fire_stability = round(firing_stability, 2)
+        shoot_data.score = round(score, 2)
 
     @classmethod
     def score_number(cls, a: float, b: float, c: float, d: float, e: float):
@@ -137,6 +140,8 @@ class MyListener():
 if __name__ == '__main__':
     r = random.randint(0, 0x64)
     print(r)
+    v = round(100.45699999999, 3)
+    print(v)
     arr = [0x16, 0x10, 0x10, 0x01, 0x56, 0x24, 0x15, 0x56, 0x14, 0x18, 0x46, 0x55, 0x17, 0x00, 0x88]
     print(arr)
     MyListener.decode(arr)
