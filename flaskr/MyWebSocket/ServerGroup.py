@@ -1,5 +1,8 @@
+from flaskr import WebSocketServer
+
+
 class ServerGroup:
-    server = None
+    server: WebSocketServer = None
 
     @classmethod
     def add(cls, server):
