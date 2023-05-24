@@ -1,3 +1,4 @@
+import uuid as uuid
 from sqlalchemy import Column, String, DateTime, ForeignKey
 
 from flaskr.models.Shooter import Shooter
@@ -7,7 +8,7 @@ from .user import User
 
 class TrainRecord(Base):
     __tablename__ = 'train_record'
-    id = Column(String(255), primary_key=True, comment='训练记录id')
+    id = Column(String(255), default=str(uuid.uuid4()), primary_key=True, comment='训练记录id')
     train_time = Column(DateTime, comment='训练时间')
     shooter_id = Column(String(255), ForeignKey('shooter.id'), comment='射手id')
 

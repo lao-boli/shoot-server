@@ -1,7 +1,11 @@
+import json
+from datetime import datetime
+
 from flask import (
     Blueprint, request, jsonify
 )
 
+from flaskr.MySerial.listener import MyListener
 from flaskr.api.auth import login_required
 from flaskr.models import TrainRecord, base, Result
 import logging
@@ -33,6 +37,15 @@ def get_train_record(train_record_id):
     if train_record is None:
         return jsonify(Result.fail(msg='train_record not found'))
     return jsonify(train_record.serialize())
+
+
+@api.route('/start', methods=['POST'])
+@login_required
+def start_train():
+    shooter_id = request.json['shooterId']
+    train_record = TrainRecord.add({'shooter_id': shooter_id, 'train_time': datetime.now()})
+    MyListener.train_record_id = train_record.id
+    return jsonify(Result.success(msg='开始训练', data=train_record.serialize()))
 
 
 @api.route('/add', methods=['POST'])

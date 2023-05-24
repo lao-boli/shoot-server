@@ -10,21 +10,44 @@ from flaskr.utils.MyJsonEncoder import MyJSONEncoder
 
 class MyListener():
     sequence = 1
+    train_record_id = None
 
     @classmethod
-    def decode(cls, raw: list):
+    def on_recv(cls, data):
+        coord, shoot_data = cls.decode(data)
+
+        if shoot_data is not None and cls.train_record_id is not None:
+            # 插入数据库
+            shoot_data.record_id = cls.train_record_id
+            ShootData.add_self(shoot_data)
+
+        asyncio.run(ServerGroup.server.broadcast(json.dumps(coord, cls=MyJSONEncoder)))
+
+    @classmethod
+    def reset(cls):
+        cls.sequence = 1
+        cls.train_record_id = None
+
+    @classmethod
+    def decode(cls, raw: list) -> (dict, ShootData):
+        """
+        解码硬件数据
+
+        :param raw: 16进制数组
+        :return: coord - 轨迹坐标 , shoot_data - 射击数据
+        """
         # 第一位 不是0x16丢掉
         if 0x16 != raw[0]:
-            return
+            return None, None
         # 第三位 用来判断上行下行信息的 后端发过去是01 收到的是10
         if 0x10 != raw[2]:
-            return
+            return None, None
 
         # 第二位 10 为坐标信息
         if 0x10 == raw[1]:
             coord = {}
-            coord['axis_x'] = int(raw[10]) + int(raw[11]) / 100
-            coord['axis_y'] = int(raw[12]) + int(raw[13]) / 100
+            coord['axisX'] = int(raw[10]) + int(raw[11]) / 100
+            coord['axisY'] = int(raw[12]) + int(raw[13]) / 100
             # 轨迹数据
             if 0x00 == raw[3]:
                 coord['curve'] = True
@@ -48,16 +71,17 @@ class MyListener():
 
                 coord.update(shoot_data.serialize())
                 cls.sequence += 1
+                return coord, shoot_data
 
             print(coord)
-
-            asyncio.run(ServerGroup.server.broadcast(json.dumps(coord, cls=MyJSONEncoder)))
+            return coord, None
 
         # 第九位 ack 只有第二位00有效
         if 0x00 == raw[8]:
             raw[8] = 0x99
             raw[2] = 0x01
             # TODO send to port
+        return None, None
 
     @classmethod
     def score(cls, shoot_data: ShootData):
