@@ -57,7 +57,11 @@ class TrainRecord(Base):
         range_param = cls.filter_range_params(dict(params))
         query = cls.range_query_snippet(query, range_param)
 
+        query = cls.order_by_snippet(params=params, query=query)
+
         page = query.paginate(page=page_num, per_page=page_size)
+        for item in page.items:
+            item.shoot_data_list = item.shoot_data_r.all()
         return page
 
     @classmethod

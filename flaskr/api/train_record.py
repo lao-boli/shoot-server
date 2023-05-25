@@ -69,11 +69,11 @@ def update_train_record():
     return jsonify(Result.success(msg='更新用户成功'))
 
 
-@api.route('/delete/<int:train_record_id>', methods=['DELETE'])
+@api.route('/delete/<string:train_record_id>', methods=['DELETE'])
 @login_required
 def delete_train_record(train_record_id):
     train_record = TrainRecord.delete(train_record_id)
-    return jsonify(Result.success(msg='删除用户成功'))
+    return jsonify(Result.success(msg='删除训练记录成功'))
 
 
 # not id
