@@ -4,17 +4,6 @@ import serial
 import serial_asyncio
 
 
-async def listen_serial(port, baudrate):
-    # 创建一个 Serial 对象
-    # ser = serial.Serial(port=port, baudrate=baudrate)
-    # 将 Serial 对象包装为一个流式传输对象
-    transport, protocol = await serial_asyncio.create_serial_connection(asyncio.get_event_loop(),
-                                                                        lambda: SerialProtocol(), port, baudrate)
-    # 等待连接完成
-    await asyncio.sleep(0.5)
-    return transport, protocol
-
-
 class SerialProtocol(asyncio.Protocol):
     def connection_made(self, transport):
         self.transport = transport
@@ -28,15 +17,44 @@ class SerialProtocol(asyncio.Protocol):
         # 连接被关闭
         print('Serial port closed')
 
+    def pause_writing(self):
+        print('pause writing')
 
-async def main():
-    transport, protocol = await listen_serial('COM3', 9600)
+    def resume_writing(self):
+        print('resume writing')
+
+
+async def listen_serial(port, baudrate):
+    coro = await serial_asyncio.create_serial_connection(asyncio.get_event_loop(),
+                                                         lambda: SerialProtocol(), port, baudrate)
+    return coro
+
+
+async def start_listen_serial():
+    await serial_asyncio.create_serial_connection(asyncio.get_event_loop(),
+                                                  lambda: SerialProtocol(), 'COM6', 9600)
+
+
+def run():
     try:
-        while True:
-            await asyncio.sleep(1)
+        asyncio.run(start_listen_serial())
+        # print(transport)
     except KeyboardInterrupt:
-        transport.close()
+        pass
+
+
+def run2():
+    loop = asyncio.get_event_loop()
+    coro = listen_serial('COM3', 9600)
+    transport, protocol = loop.run_until_complete(coro)
+    print(transport)
+    try:
+        loop.run_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        loop.close()
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    run()

@@ -9,6 +9,7 @@ from .utils import MyJSONEncoder, ColoredLevelFormatter
 
 from flask import Flask, jsonify
 from flask_cors import CORS
+from flaskr.MySerial.SerialListener import start_listen_serial
 
 import logging
 import traceback
@@ -21,6 +22,7 @@ server = WebSocketServer(port=9001, name='front')
 async def main():
     await asyncio.gather(
         server.start_server(),
+        start_listen_serial()
     )
 
 
