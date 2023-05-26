@@ -7,6 +7,7 @@ from flask import (
 )
 
 from flaskr.MySerial.listener import MyListener
+from flaskr.MySerial.SerialListener import handle
 from flaskr.api.auth import login_required
 from flaskr.models import User, Shooter, base, Result
 import logging
@@ -35,6 +36,11 @@ def test_on_recv():
     MyListener.on_recv([0x16, 0x10, 0x10, curve, 0x56, 0x24, 0x15, 0x56, 0x14, 0x18, x, 0x55, y, 0x00, 0x88])
     return jsonify(Result.success(data='succ'))
 
+
+@api.route('/update-dev-state', methods=['GET'])
+def update_dev_state():
+    handle.write_data(data='a')
+    return jsonify(Result.success())
 
 @api.route('/online', methods=['GET'])
 def online():

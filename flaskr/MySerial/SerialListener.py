@@ -20,6 +20,9 @@ class SerialProtocol(asyncio.Protocol):
         print(list(data))
         MyListener.on_recv(list(data))
 
+    def write_data(self, data):
+        self.transport.write(b'Hello, World!\n')
+
     def connection_lost(self, exc):
         # 连接被关闭
         print('Serial port closed')
@@ -31,6 +34,9 @@ class SerialProtocol(asyncio.Protocol):
         print('resume writing')
 
 
+handle = SerialProtocol()
+
+
 async def listen_serial(port, baudrate):
     coro = await serial_asyncio.create_serial_connection(asyncio.get_event_loop(),
                                                          lambda: SerialProtocol(), port, baudrate)
@@ -39,7 +45,7 @@ async def listen_serial(port, baudrate):
 
 async def start_listen_serial():
     await serial_asyncio.create_serial_connection(asyncio.get_event_loop(),
-                                                  lambda: SerialProtocol(), 'COM2', 9600)
+                                                  lambda: handle, 'COM2', 9600)
 
 
 def run():
