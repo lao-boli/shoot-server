@@ -1,13 +1,13 @@
 import datetime
 import json
 import random
-
 from flaskr import ShootData
 import asyncio
 
 from flaskr.MyWebSocket.ServerGroup import ServerGroup
 from flaskr.utils import StyleFormatter
 from flaskr.utils.MyJsonEncoder import MyJSONEncoder
+
 
 
 class ShootHandler:
@@ -29,6 +29,9 @@ class ShootHandler:
 
         :param data: bytes数组
         """
+
+        from app import app
+        app.app_context().push()
         coord, shoot_data = cls.decode(data)
 
         if shoot_data is not None and cls.train_record_id is not None:
