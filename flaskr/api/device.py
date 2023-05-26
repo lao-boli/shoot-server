@@ -38,9 +38,28 @@ def test_on_recv():
     return jsonify(Result.success(data='succ'))
 
 
-@api.route('/update-dev-state', methods=['GET'])
-def update_dev_state():
-    handle.write_data(data=b'a')
+@api.route('/config', methods=['POST'])
+def config():
+    conf = {
+        "voiceTargetReporting": False,  # 语音报靶
+        "toggleSwitch": False,  # 拉栓开关
+        "recoilForceFeedback": False,  # 后坐力反馈
+        "lowBatteryThreshold": 10,  # #低电量门限
+        "speakerVolume": 1,  # 喇叭音量
+        "cartridgeCapacity": 1  # 弹夹容量
+    }
+    # 下发配置数据
+    conf = request.json
+    config_command = [0x16, 0x11, 0x01, 0x00, 0x7b, 0x01, 0xc8, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
+    config_command[9] = conf["cartridgeCapacity"]
+    config_command[10] = conf["voiceTargetReporting"]
+    config_command[11] = conf["toggleSwitch"]
+    config_command[12] = conf["recoilForceFeedback"]
+    config_command[13] = conf["lowBatteryThreshold"]
+    config_command[14] = conf["speakerVolume"]
+
+    handle.write_data(data=bytes(config_command))
+
     return jsonify(Result.success())
 
 
