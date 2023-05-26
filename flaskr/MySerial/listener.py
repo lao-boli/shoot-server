@@ -10,12 +10,25 @@ from flaskr.utils import StyleFormatter
 from flaskr.utils.MyJsonEncoder import MyJSONEncoder
 
 
-class MyListener():
+class ShootHandler:
+    """
+    射击业务处理器,桥接http,websocket,serial三方的数据交互
+    Attributes:
+        sequence: 弹序，默认为1，每次训练开始后重置为1
+        train_record_id: 训练记录id，每次训练开始后需要进行设置
+    """
+
     sequence = 1
     train_record_id = None
 
     @classmethod
-    def on_recv(cls, data):
+    def on_recv(cls, data: list) -> None:
+        """
+        接收到串口消息后的业务处理函数
+
+
+        :param data: bytes数组
+        """
         coord, shoot_data = cls.decode(data)
 
         if shoot_data is not None and cls.train_record_id is not None:
@@ -25,7 +38,8 @@ class MyListener():
 
         if coord is not None:
             # 串口测试与真机采用这种方式
-            asyncio.get_event_loop().create_task(ServerGroup.get_front().broadcast(json.dumps(StyleFormatter.snake_to_camel_dict(coord), cls=MyJSONEncoder)))
+            asyncio.get_event_loop().create_task(ServerGroup.get_front().broadcast(
+                json.dumps(StyleFormatter.snake_to_camel_dict(coord), cls=MyJSONEncoder)))
             # http 测试采用这种方式
             # asyncio.run(
             #     ServerGroup.get_front().broadcast(json.dumps(StyleFormatter.snake_to_camel_dict(coord), cls=MyJSONEncoder)))
@@ -47,7 +61,12 @@ class MyListener():
     @classmethod
     def decode(cls, raw: list) -> (dict, ShootData):
         """
-        解码硬件数据
+        解码硬件数据\n
+        e.g:\n
+        轨迹坐标:
+            [0x16, 0x10, 0x10, 0x01, 0x56, 0x24, 0x15, 0x56, 0x14, 0x18, 0x46, 0x55, 0x17, 0x00, 0x88]
+        注册消息:
+            [0x16, 0x20, 0x01, 0x01, 0x56, 0x24, 0x15, 0x56, 0x14, 0x18, 0x46, 0x55, 0x17, 0x00, 0x88]
 
         :param raw: 16进制数组
         :return: coord - 轨迹坐标 , shoot_data - 射击数据
@@ -151,6 +170,6 @@ if __name__ == '__main__':
     arr = [0x16, 0x10, 0x10, 0x01, 0x56, 0x24, 0x15, 0x56, 0x14, 0x18, 0x46, 0x55, 0x17, 0x00, 0x88]
     print(arr)
     print(bytes(arr))
-    MyListener.decode(arr)
+    ShootHandler.decode(arr)
 
 '16 10 10 01 56 24 15 56 14 18 46 55 17 00 88'

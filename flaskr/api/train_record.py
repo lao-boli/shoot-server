@@ -5,7 +5,7 @@ from flask import (
     Blueprint, request, jsonify
 )
 
-from flaskr.MySerial.listener import MyListener
+from flaskr.MySerial.listener import ShootHandler
 from flaskr.api.auth import login_required
 from flaskr.models import TrainRecord, base, Result
 import logging
@@ -44,14 +44,14 @@ def get_train_record(train_record_id):
 def start_train():
     shooter_id = request.json['shooterId']
     train_record = TrainRecord.add({'shooter_id': shooter_id, 'train_time': datetime.now()})
-    MyListener.start(train_record_id=train_record.id)
+    ShootHandler.start(train_record_id=train_record.id)
     return jsonify(Result.success(msg='开始训练', data=train_record.serialize()))
 
 
 @api.route('/stop', methods=['POST'])
 @login_required
 def stop_train():
-    MyListener.stop()
+    ShootHandler.stop()
     return jsonify(Result.success(msg='结束训练'))
 
 

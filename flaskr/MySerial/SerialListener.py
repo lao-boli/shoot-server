@@ -1,9 +1,8 @@
 import asyncio
 
-import serial
 import serial_asyncio
 
-from flaskr.MySerial.listener import MyListener
+from flaskr.MySerial.listener import ShootHandler
 
 
 class SerialProtocol(asyncio.Protocol):
@@ -18,7 +17,7 @@ class SerialProtocol(asyncio.Protocol):
     def data_received(self, data):
         # 处理接收到的数据
         print(list(data))
-        MyListener.on_recv(list(data))
+        ShootHandler.on_recv(list(data))
 
     def write_data(self, data: bytes):
         self.transport.write(data)
@@ -37,37 +36,6 @@ class SerialProtocol(asyncio.Protocol):
 handle = SerialProtocol()
 
 
-async def listen_serial(port, baudrate):
-    coro = await serial_asyncio.create_serial_connection(asyncio.get_event_loop(),
-                                                         lambda: SerialProtocol(), port, baudrate)
-    return coro
-
-
 async def start_listen_serial():
     await serial_asyncio.create_serial_connection(asyncio.get_event_loop(),
                                                   lambda: handle, 'COM2', 9600)
-
-
-def run():
-    try:
-        asyncio.run(start_listen_serial())
-        # print(transport)
-    except KeyboardInterrupt:
-        pass
-
-
-def run2():
-    loop = asyncio.get_event_loop()
-    coro = listen_serial('COM3', 9600)
-    transport, protocol = loop.run_until_complete(coro)
-    print(transport)
-    try:
-        loop.run_forever()
-    except KeyboardInterrupt:
-        pass
-    finally:
-        loop.close()
-
-
-if __name__ == '__main__':
-    run()
