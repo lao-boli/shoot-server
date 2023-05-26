@@ -11,8 +11,10 @@ logger = logging.getLogger(__name__)
 
 
 class WebSocketServer:
-    def __init__(self, port, on_close: callable = None, on_open: callable = None, on_message: callable = None):
+    def __init__(self, name: str, port: int, on_close: callable = None, on_open: callable = None,
+                 on_message: callable = None):
         self.port = port
+        self.name = name
         self.server = None
         self.on_open = on_open
         self.on_close = on_close
@@ -39,16 +41,6 @@ class WebSocketServer:
             self.connections = {}
             self.server.close()
             await self.server.wait_closed()
-
-    @staticmethod
-    def convert_addr(addr: tuple):
-        """
-        将addr tuple 转换成字符串.\n
-        e.g: ((127.0.0.1),(8888)) -> "127.0.0.1:8888"
-        :param addr: websocket address
-        :return: str addr
-        """
-        return str(addr[0]) + ':' + str(addr[1])
 
     async def handler(self, websocket: WebSocketServerProtocol, path):
         # 获取当前连接的端口号
@@ -86,10 +78,20 @@ class WebSocketServer:
         for conn in self.connections.values():
             await conn.send(message)
 
+    @staticmethod
+    def convert_addr(addr: tuple):
+        """
+        将addr tuple 转换成字符串.\n
+        e.g: ((127.0.0.1),(8888)) -> "127.0.0.1:8888"
+        :param addr: websocket address
+        :return: str addr
+        """
+        return str(addr[0]) + ':' + str(addr[1])
+
 
 async def main():
-    server1 = WebSocketServer(8000, on_message=(lambda _: print('onmessage')))
-    server2 = WebSocketServer(9001)
+    server1 = WebSocketServer(port=8000, on_message=(lambda _: print('onmessage')))
+    server2 = WebSocketServer(port=9001)
     await asyncio.gather(
         server1.start_server(),
         server2.start_server(),

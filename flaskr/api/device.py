@@ -18,7 +18,7 @@ db = base.db
 
 from flaskr.MyWebSocket.ServerGroup import ServerGroup
 
-ws_server = ServerGroup.server
+ws_server = ServerGroup.server_map
 
 
 @api.route('/test-decode', methods=['GET'])

@@ -24,7 +24,7 @@ class MyListener():
             ShootData.add_self(shoot_data)
 
         asyncio.run(
-            ServerGroup.server.broadcast(json.dumps(StyleFormatter.snake_to_camel_dict(coord), cls=MyJSONEncoder)))
+            ServerGroup.get_front().broadcast(json.dumps(StyleFormatter.snake_to_camel_dict(coord), cls=MyJSONEncoder)))
 
     @classmethod
     def start(cls, train_record_id):

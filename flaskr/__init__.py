@@ -15,7 +15,7 @@ import traceback
 
 logger = logging.getLogger(__name__)
 
-server = WebSocketServer(9001)
+server = WebSocketServer(port=9001, name='front')
 
 
 async def main():
