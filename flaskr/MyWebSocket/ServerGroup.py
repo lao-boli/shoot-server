@@ -1,6 +1,10 @@
 from typing import Dict, Any
+from typing import TYPE_CHECKING
 
-from websocket.server import WebsocketServer
+
+if TYPE_CHECKING:
+    from websocket.server import WebsocketServer
+
 
 from flaskr.MyWebSocket import Server
 
@@ -10,7 +14,7 @@ class ServerGroup:
     Attributes:
         server_map : 保存 :class:`WebsocketServer` 的字典
     """
-    server_map: dict[str, WebsocketServer] = {}
+    server_map: dict[str, Any] = {}
 
     @classmethod
     def add(cls, server: Server):
@@ -31,10 +35,10 @@ class ServerGroup:
         print(cls.server_map)
 
     @classmethod
-    def get_front(cls) -> WebsocketServer:
+    def get_front(cls) -> Any:
         """
         获取和前端进行通信的WebSocketServer.
 
-        :return: 和前端进行通信的WebSocketServer.
+        :return: 和前端进行通信的 :class:`WebsocketServer`.
         """
         return cls.server_map['front']
