@@ -3,15 +3,22 @@ import asyncio
 import serial
 import serial_asyncio
 
+from flaskr.MySerial.listener import MyListener
+
 
 class SerialProtocol(asyncio.Protocol):
+
+    def __init__(self):
+        self.transport = None
+
     def connection_made(self, transport):
         self.transport = transport
         print('port opened', transport)
 
     def data_received(self, data):
         # 处理接收到的数据
-        print(data.decode('utf8'))
+        print(list(data))
+        MyListener.on_recv(list(data))
 
     def connection_lost(self, exc):
         # 连接被关闭
@@ -32,7 +39,7 @@ async def listen_serial(port, baudrate):
 
 async def start_listen_serial():
     await serial_asyncio.create_serial_connection(asyncio.get_event_loop(),
-                                                  lambda: SerialProtocol(), 'COM6', 9600)
+                                                  lambda: SerialProtocol(), 'COM2', 9600)
 
 
 def run():
