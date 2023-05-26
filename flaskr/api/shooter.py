@@ -2,6 +2,7 @@ from flask import (
     Blueprint, request, jsonify
 )
 
+from flaskr import ResultError
 from flaskr.api.auth import login_required
 from flaskr.models import User, Shooter, base, Result
 import logging
@@ -45,7 +46,15 @@ def add_shooter():
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        logger.error(e)
+        if 'Duplicate entry' in str(e):
+            raise ResultError(message='键冲突')
+        elif 'foreign key' in str(e):
+            raise ResultError(message='外键所指的记录不存在')
+        elif 'cannot be null' in str(e):
+            raise ResultError(message='非空字段为空')
+        else:
+            logger.warning(e)
+            raise ResultError(message='Database IntegrityError')
 
     return jsonify(Result.success(msg='添加射手成功'))
 
