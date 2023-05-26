@@ -23,11 +23,12 @@ class MyListener():
             shoot_data.record_id = cls.train_record_id
             ShootData.add_self(shoot_data)
 
-        # 串口测试与真机采用这种方式
-        asyncio.get_event_loop().create_task(ServerGroup.get_front().broadcast(json.dumps(StyleFormatter.snake_to_camel_dict(coord), cls=MyJSONEncoder)))
-        # http 测试采用这种方式
-        # asyncio.run(
-        #     ServerGroup.get_front().broadcast(json.dumps(StyleFormatter.snake_to_camel_dict(coord), cls=MyJSONEncoder)))
+        if coord is not None:
+            # 串口测试与真机采用这种方式
+            asyncio.get_event_loop().create_task(ServerGroup.get_front().broadcast(json.dumps(StyleFormatter.snake_to_camel_dict(coord), cls=MyJSONEncoder)))
+            # http 测试采用这种方式
+            # asyncio.run(
+            #     ServerGroup.get_front().broadcast(json.dumps(StyleFormatter.snake_to_camel_dict(coord), cls=MyJSONEncoder)))
 
     @classmethod
     def start(cls, train_record_id):
@@ -96,7 +97,9 @@ class MyListener():
         if 0x00 == raw[8]:
             raw[8] = 0x99
             raw[2] = 0x01
-            # TODO send to port
+            # 向串口下发收到注册消息
+            from flaskr.MySerial.SerialListener import handle
+            handle.write_data(bytes(raw))
         return None, None
 
     @classmethod
@@ -147,6 +150,7 @@ if __name__ == '__main__':
     print(v)
     arr = [0x16, 0x10, 0x10, 0x01, 0x56, 0x24, 0x15, 0x56, 0x14, 0x18, 0x46, 0x55, 0x17, 0x00, 0x88]
     print(arr)
+    print(bytes(arr))
     MyListener.decode(arr)
 
 '16 10 10 01 56 24 15 56 14 18 46 55 17 00 88'

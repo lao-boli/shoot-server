@@ -20,8 +20,8 @@ class SerialProtocol(asyncio.Protocol):
         print(list(data))
         MyListener.on_recv(list(data))
 
-    def write_data(self, data):
-        self.transport.write(b'Hello, World!\n')
+    def write_data(self, data: bytes):
+        self.transport.write(data)
 
     def connection_lost(self, exc):
         # 连接被关闭

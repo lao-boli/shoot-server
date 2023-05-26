@@ -39,7 +39,7 @@ def test_on_recv():
 
 @api.route('/update-dev-state', methods=['GET'])
 def update_dev_state():
-    handle.write_data(data='a')
+    handle.write_data(data=b'a')
     return jsonify(Result.success())
 
 @api.route('/online', methods=['GET'])
