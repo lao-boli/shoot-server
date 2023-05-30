@@ -8,6 +8,7 @@ from flaskr.exception import ResultError
 
 class ShootData(Base):
     __tablename__ = 'shoot_data'
+    __table_args__ = {'comment': '射击数据表'}
     id = Column(Integer, primary_key=True, comment='射击数据id')
     record_id = Column(String(255), ForeignKey('train_record.id'), comment='训练记录id')
 

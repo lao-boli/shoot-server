@@ -8,6 +8,7 @@ from .user import User
 
 class TrainRecord(Base):
     __tablename__ = 'train_record'
+    __table_args__ = {'comment': '训练记录表'}
     id = Column(String(255), default=lambda: str(uuid.uuid4()), primary_key=True, comment='训练记录id')
     train_time = Column(DateTime, comment='训练时间')
     shooter_id = Column(String(255), ForeignKey('shooter.id'), comment='射手id')

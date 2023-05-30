@@ -8,6 +8,7 @@ from flaskr.exception import ResultError
 
 class Trainer(Base):
     __tablename__ = 'trainer'
+    __table_args__ = {'comment': '教练员表'}
     id = Column(String(255), primary_key=True, comment='教练员id')
     username = Column(String(255), ForeignKey('user.username'), comment='教练员账号')
 

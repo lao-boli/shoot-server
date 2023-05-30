@@ -8,6 +8,7 @@ from flaskr.exception import ResultError
 
 class User(Base):
     __tablename__ = 'user'
+    __table_args__ = {'comment': '用户表'}
     id = Column(Integer, primary_key=True, comment='主键')
     create_time = Column(DateTime, comment='创建时间')
     name = Column(String(50), nullable=True, comment='用户姓名')
