@@ -9,7 +9,6 @@ from flaskr.utils import StyleFormatter
 from flaskr.utils.MyJsonEncoder import MyJSONEncoder
 
 
-
 class ShootHandler:
     """
     射击业务处理器,桥接http,websocket,serial三方的数据交互

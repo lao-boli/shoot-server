@@ -5,7 +5,7 @@ from flask import (
     Blueprint, request, jsonify
 )
 
-from flaskr.MySerial.listener import ShootHandler
+from flaskr.MySerial.ShootHandler import ShootHandler
 from flaskr.api.auth import login_required
 from flaskr.models import TrainRecord, base, Result
 import logging

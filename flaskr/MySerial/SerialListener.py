@@ -2,7 +2,7 @@ import asyncio
 
 import serial_asyncio
 
-from flaskr.MySerial.listener import ShootHandler
+from flaskr.MySerial.ShootHandler import ShootHandler
 
 
 class SerialProtocol(asyncio.Protocol):
