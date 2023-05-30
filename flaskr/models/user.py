@@ -1,5 +1,5 @@
 import sqlalchemy
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime,BigInteger
 from sqlalchemy.exc import IntegrityError, NoResultFound
 from werkzeug.security import generate_password_hash
 from .base import Base, db
@@ -9,7 +9,7 @@ from flaskr.exception import ResultError
 class User(Base):
     __tablename__ = 'user'
     __table_args__ = {'comment': '用户表'}
-    id = Column(Integer, primary_key=True, comment='主键')
+    id = Column(BigInteger, primary_key=True, comment='主键')
     create_time = Column(DateTime, comment='创建时间')
     name = Column(String(50), nullable=True, comment='用户姓名')
     username = Column(String(255), unique=True, nullable=True, comment='账号名')

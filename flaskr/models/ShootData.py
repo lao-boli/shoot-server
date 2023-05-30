@@ -1,5 +1,5 @@
 import sqlalchemy
-from sqlalchemy import Column, Integer, String, DateTime, Double, false, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, Double, false, ForeignKey,BigInteger
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import generate_password_hash
 from .base import Base, db
@@ -9,7 +9,7 @@ from flaskr.exception import ResultError
 class ShootData(Base):
     __tablename__ = 'shoot_data'
     __table_args__ = {'comment': '射击数据表'}
-    id = Column(Integer, primary_key=True, comment='射击数据id')
+    id = Column(BigInteger, primary_key=True, comment='射击数据id')
     record_id = Column(String(255), ForeignKey('train_record.id'), comment='训练记录id')
 
     sequence = Column(Integer, nullable=False, comment='弹序')
