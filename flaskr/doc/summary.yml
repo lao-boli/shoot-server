@@ -1,0 +1,67 @@
+swagger: '2.0'
+info:
+  title: 射击管理平台
+  version: '1.0.0'
+paths:
+  /login:
+    post:
+      tags:
+        - "auth"
+      summary: 登录
+      produces:
+        - application/json
+      parameters:
+        - name: user
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+                description: 用户名
+              password:
+                type: string
+                description: 密码
+      responses:
+        '200':
+          description: 登录成功
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                description: 响应码
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: 登录凭证
+                description: 数据
+
+        '500':
+          description: 添加用户失败
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+
+  /logout:
+    get:
+      summary: Get a greeting message
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: A greeting message
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+

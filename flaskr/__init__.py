@@ -1,5 +1,6 @@
 import asyncio
 
+from flasgger import Swagger
 from flask import Flask, jsonify
 
 from .MyWebSocket.Server import WebSocketServer
@@ -39,6 +40,7 @@ def get_ws():
 
 def create_app(test_config=None):
     app = Flask(__name__)
+    Swagger(app=app,template_file='doc/final.yml')
 
     CORS(app, resources={r'/*': {'supports_credentials': True}})
 
@@ -93,6 +95,9 @@ def create_app(test_config=None):
 
     from .api.auth import bp
     app.register_blueprint(bp)
+
+    for rule in app.url_map.iter_rules():
+        print('name={} path={}'.format(rule.endpoint, rule.rule))
     return app
 
 
