@@ -48,7 +48,7 @@ def create_app(test_config=None):
     ws.start()
 
     app.json_encoder = MyJSONEncoder
-    app.debug = True
+
     app.config.from_mapping(
         SECRET_KEY='dev',
         SQLALCHEMY_DATABASE_URI='mysql+pymysql://root:root@127.0.0.1:3306/shoot?charset=utf8',
