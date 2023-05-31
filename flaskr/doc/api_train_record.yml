@@ -56,7 +56,7 @@ paths:
               data:
                 type: object
 
-  /api/train-record/get:
+  /api/train-record/get/{recordId}:
     get:
       tags:
         - "训练记录"
@@ -64,7 +64,7 @@ paths:
       produces:
         - application/json
       parameters:
-        - name: train-recordId
+        - name: recordId
           type: string
           in: path
           required: true
@@ -213,7 +213,7 @@ paths:
               data:
                 type: object
 
-  /api/train-record/delete:
+  /api/train-record/delete/{recordId}:
     delete:
       tags:
         - "训练记录"
@@ -221,7 +221,7 @@ paths:
       produces:
         - application/json
       parameters:
-        - name: id
+        - name: recordId
           in: path
           type: string
           required: true
@@ -299,6 +299,9 @@ definitions:
       shooterId:
         type: string
         description: 射手id
+      shooterName:
+        type: string
+        description: 射手姓名
       shoot_data_list:
         type: array
         description: 训练成绩列表

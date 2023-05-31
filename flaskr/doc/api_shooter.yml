@@ -1,5 +1,5 @@
 paths:
-  /api/shooter/get:
+  /api/shooter/get/{shooterId}:
     get:
       tags:
         - "射手"
@@ -156,7 +156,7 @@ paths:
               data:
                 type: object
 
-  /api/shooter/delete:
+  /api/shooter/delete/{shooterId}:
     delete:
       tags:
         - "射手"
@@ -164,7 +164,7 @@ paths:
       produces:
         - application/json
       parameters:
-        - name: id
+        - name: shooterId
           in: path
           type: string
           required: true

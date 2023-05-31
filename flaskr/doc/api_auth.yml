@@ -1,4 +1,44 @@
 paths:
+  /api/register:
+    post:
+      tags:
+        - "权限"
+      summary: 注册
+      produces:
+        - application/json
+      parameters:
+        - name: user
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+                description: 用户名
+              password:
+                type: string
+                description: 密码
+      responses:
+        '200':
+          description: 登录成功
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 20000
+                description: 响应码
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: 登录凭证
+                description: 数据
   /api/login:
     post:
       tags:

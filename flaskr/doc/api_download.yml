@@ -1,6 +1,6 @@
 paths:
   /api/download/excel/train-record:
-    post:
+    get:
       tags:
         - "下载"
       summary: 下载训练记录excel
