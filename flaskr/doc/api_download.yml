@@ -1,0 +1,15 @@
+paths:
+  /api/download/excel/train-record:
+    post:
+      tags:
+        - "下载"
+      summary: 下载训练记录excel
+      produces:
+        - application/octet-stream
+      responses:
+        '200':
+          description: 导出成功
+          schema:
+            type: file
+definitions:
+  {}

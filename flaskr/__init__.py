@@ -12,6 +12,7 @@ from .models import *
 # start_listen_serial 必须在 导入models后才能导入
 from flaskr.MySerial.SerialListener import start_listen_serial
 from .utils import MyJSONEncoder, ColoredLevelFormatter
+import flask_excel as excel
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +39,9 @@ def get_ws():
 
 def create_app(test_config=None):
     app = Flask(__name__)
+
+    excel.init_excel(app)
+
     Swagger(app=app, template_file='doc/final.yml')
 
     CORS(app, resources={r'/*': {'supports_credentials': True}})
@@ -100,6 +104,9 @@ def create_app(test_config=None):
 
     from .api.auth import bp
     app.register_blueprint(bp)
+
+    from .api.download import api
+    app.register_blueprint(api)
 
     return app
 
