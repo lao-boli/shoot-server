@@ -1,7 +1,7 @@
 import asyncio
 
 from flasgger import Swagger
-from flask import Flask, jsonify
+from flask import Flask, jsonify, make_response, abort
 
 from .MyWebSocket.Server import WebSocketServer
 from .models import *
@@ -61,6 +61,13 @@ def create_app(test_config=None):
     )
 
     # error handlers
+
+    @app.errorhandler(404)
+    def handle_error(e):
+        response = jsonify({'error': 'Not found'})
+        response.status_code = 404
+        return response
+
     @app.errorhandler(Exception)
     def handle_runtime_error(e):
         app.logger.error('{}'.format(e))
