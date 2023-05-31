@@ -1,0 +1,118 @@
+paths:
+
+  /api/device/config:
+    post:
+      tags:
+        - "设备"
+      summary: 设备配置
+      produces:
+        - application/json
+      parameters:
+        - name: conf
+          in: body
+          required: true
+          schema:
+            $ref: "#definitions/conf"
+
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                description: 响应码
+                example: 20000
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                type: object
+  /api/device/online:
+    get:
+      tags:
+        - "设备"
+      summary: 获胜设备上线
+      produces:
+        - application/json
+
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 20000
+                description: 响应码
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                $ref: "#definitions/dev_state"
+
+  /api/device/offline:
+    post:
+      tags:
+        - "设备"
+      summary: 设备下线
+      produces:
+        - application/json
+
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                description: 响应码
+                example: 20000
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                type: object
+
+definitions:
+  conf:
+    type: object
+    description: 枪配置数据
+    properties:
+      voiceTargetReporting:
+        type: boolean
+        description: 语音报靶
+      toggleSwitch:
+        type: boolean
+        description: 拉栓开关
+      recoilForceFeedback:
+        type: boolean
+        description: 后坐力反馈
+      lowBatteryThreshold:
+        type: integer
+        description: 低电量门限
+      speakerVolume:
+        type: integer
+        description: 喇叭音量
+      cartridgeCapacity:
+        type: integer
+        description: 弹夹容量
+
+  dev_state:
+    type: object
+    description: 设备状态
+    properties:
+      type:
+        type: string
+        description: 消息类型
+        example: devState
+      gunOnline:
+        type: boolean
+        description: 枪在线
+      targetOnline:
+        type: boolean
+        description: 靶子在线
+

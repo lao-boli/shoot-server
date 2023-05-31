@@ -1,8 +1,693 @@
 swagger: '2.0'
 info:
   title: 射击管理平台
-  version: '1.0.0'
+  version: 1.0.0
 paths:
-
+  /api/login:
+    post:
+      tags:
+      - 权限
+      summary: 登录
+      produces:
+      - application/json
+      parameters:
+      - name: user
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            username:
+              type: string
+              description: 用户名
+            password:
+              type: string
+              description: 密码
+      responses:
+        '200':
+          description: 登录成功
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 20000
+                description: 响应码
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: 登录凭证
+                description: 数据
+  /api/get-info:
+    get:
+      tags:
+      - 权限
+      summary: 获取角色信息
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: A greeting message
+          schema:
+            type: object
+            properties:
+              roles:
+                type: array
+                items:
+                  type: string
+  /api/logout:
+    get:
+      tags:
+      - 权限
+      summary: 退出
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: A greeting message
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+  /api/device/config:
+    post:
+      tags:
+      - 设备
+      summary: 设备配置
+      produces:
+      - application/json
+      parameters:
+      - name: conf
+        in: body
+        required: true
+        schema:
+          $ref: '#definitions/conf'
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                description: 响应码
+                example: 20000
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                type: object
+  /api/device/online:
+    get:
+      tags:
+      - 设备
+      summary: 获胜设备上线
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 20000
+                description: 响应码
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                $ref: '#definitions/dev_state'
+  /api/device/offline:
+    post:
+      tags:
+      - 设备
+      summary: 设备下线
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                description: 响应码
+                example: 20000
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                type: object
+  /api/shooter/get:
+    get:
+      tags:
+      - 射手
+      summary: 获取单个射手
+      produces:
+      - application/json
+      parameters:
+      - name: shooterId
+        type: string
+        in: path
+        required: true
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 20000
+                description: 响应码
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                $ref: '#definitions/shooter'
+  /api/shooter/list:
+    get:
+      tags:
+      - 射手
+      summary: 获取射手列表
+      produces:
+      - application/json
+      parameters:
+      - name: id
+        type: string
+        in: query
+      - name: name
+        type: string
+        in: query
+      responses:
+        '200':
+          description: 登录成功
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 20000
+                description: 响应码
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                type: array
+                items:
+                  $ref: '#definitions/shooter'
+  /api/shooter/page:
+    get:
+      tags:
+      - 射手
+      summary: 获取射手分页列表
+      produces:
+      - application/json
+      parameters:
+      - name: pageNum
+        type: integer
+        description: 页码
+        in: query
+      - name: pageSize
+        type: integer
+        description: 每页记录数
+        in: query
+      - name: orderBy
+        type: string
+        description: 排序字段
+        in: query
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 20000
+                description: 响应码
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                $ref: '#definitions/shooter_page'
+  /api/shooter/add:
+    post:
+      tags:
+      - 射手
+      summary: 添加射手
+      produces:
+      - application/json
+      parameters:
+      - name: shooter
+        in: body
+        schema:
+          $ref: '#definitions/shooter'
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                description: 响应码
+                example: 20000
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                type: object
+  /api/shooter/update:
+    post:
+      tags:
+      - 射手
+      summary: 更新射手
+      produces:
+      - application/json
+      parameters:
+      - name: shooter
+        in: body
+        schema:
+          $ref: '#definitions/shooter'
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                description: 响应码
+                example: 20000
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                type: object
+  /api/shooter/delete:
+    delete:
+      tags:
+      - 射手
+      summary: 删除射手
+      produces:
+      - application/json
+      parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 20000
+                description: 响应码
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                type: object
+  /api/train-record/start:
+    post:
+      tags:
+      - 训练记录
+      summary: 开始训练
+      produces:
+      - application/json
+      parameters:
+      - name: shooterDTO
+        in: body
+        schema:
+          type: object
+          properties:
+            shooterId:
+              type: string
+              description: 射手id
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 20000
+                description: 响应码
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                $ref: '#definitions/train_record'
+  /api/train-record/stop:
+    post:
+      tags:
+      - 训练记录
+      summary: 结束训练
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 20000
+                description: 响应码
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                type: object
+  /api/train-record/get:
+    get:
+      tags:
+      - 训练记录
+      summary: 获取单个训练记录
+      produces:
+      - application/json
+      parameters:
+      - name: train-recordId
+        type: string
+        in: path
+        required: true
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 20000
+                description: 响应码
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                $ref: '#definitions/train_record'
+  /api/train-record/list:
+    get:
+      tags:
+      - 训练记录
+      summary: 获取训练记录列表
+      produces:
+      - application/json
+      parameters:
+      - name: id
+        type: string
+        in: query
+      - name: name
+        type: string
+        in: query
+      responses:
+        '200':
+          description: 登录成功
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 20000
+                description: 响应码
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                type: array
+                items:
+                  $ref: '#definitions/train_record'
+  /api/train-record/page:
+    get:
+      tags:
+      - 训练记录
+      summary: 获取训练记录分页列表
+      produces:
+      - application/json
+      parameters:
+      - name: pageNum
+        type: integer
+        description: 页码
+        in: query
+      - name: pageSize
+        type: integer
+        description: 每页记录数
+        in: query
+      - name: orderBy
+        type: string
+        description: 排序字段
+        in: query
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 20000
+                description: 响应码
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                $ref: '#definitions/train_record_page'
+  /api/train-record/add:
+    post:
+      tags:
+      - 训练记录
+      summary: 添加训练记录
+      produces:
+      - application/json
+      parameters:
+      - name: train-record
+        in: body
+        schema:
+          $ref: '#definitions/train_record'
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                description: 响应码
+                example: 20000
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                type: object
+  /api/train-record/update:
+    post:
+      tags:
+      - 训练记录
+      summary: 更新训练记录
+      produces:
+      - application/json
+      parameters:
+      - name: train-record
+        in: body
+        schema:
+          $ref: '#definitions/train_record'
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                description: 响应码
+                example: 20000
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                type: object
+  /api/train-record/delete:
+    delete:
+      tags:
+      - 训练记录
+      summary: 删除训练记录
+      produces:
+      - application/json
+      parameters:
+      - name: id
+        in: path
+        type: string
+        required: true
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 20000
+                description: 响应码
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                type: object
 definitions:
-
+  conf:
+    type: object
+    description: 枪配置数据
+    properties:
+      voiceTargetReporting:
+        type: boolean
+        description: 语音报靶
+      toggleSwitch:
+        type: boolean
+        description: 拉栓开关
+      recoilForceFeedback:
+        type: boolean
+        description: 后坐力反馈
+      lowBatteryThreshold:
+        type: integer
+        description: 低电量门限
+      speakerVolume:
+        type: integer
+        description: 喇叭音量
+      cartridgeCapacity:
+        type: integer
+        description: 弹夹容量
+  dev_state:
+    type: object
+    description: 设备状态
+    properties:
+      type:
+        type: string
+        description: 消息类型
+        example: devState
+      gunOnline:
+        type: boolean
+        description: 枪在线
+      targetOnline:
+        type: boolean
+        description: 靶子在线
+  shooter:
+    type: object
+    properties:
+      id:
+        type: string
+        description: 射手id
+      username:
+        type: string
+        description: 射手账号名
+      name:
+        type: string
+        description: 射手名字
+  shooter_page:
+    type: object
+    properties:
+      pageNum:
+        type: integer
+        description: 页码
+      pageSize:
+        type: integer
+        description: 每页记录数
+      total:
+        type: integer
+        description: 记录总数
+      list:
+        type: array
+        items:
+          $ref: '#definitions/shooter'
+  shoot_data:
+    type: object
+    properties:
+      id:
+        type: integer
+        description: 射击数据id
+      recordId:
+        type: string
+        description: 训练记录id
+      sequence:
+        type: integer
+        description: 弹序
+      shootTime:
+        type: string
+        description: 射击时间
+      aimRingNumber:
+        type: number
+        description: 命中环数
+      hitRingNumber:
+        type: number
+        description: 瞄准环数
+      gunShaking:
+        type: integer
+        description: 据枪晃动量
+      gunShakingRate:
+        type: integer
+        description: 据枪晃动速率
+      fireShakingRate:
+        type: integer
+        description: 击发晃动量
+      fireShaking:
+        type: integer
+        description: 击发晃动速率
+      shootingAccuracy:
+        type: number
+        description: 射击精确性
+      gunStability:
+        type: number
+        description: 据枪稳定性
+      fireStability:
+        type: number
+        description: 击发稳定性
+      score:
+        type: number
+        description: 本次射击成绩
+  train_record:
+    type: object
+    properties:
+      id:
+        type: string
+        description: 训练记录id
+      trainTime:
+        type: string
+        description: 训练时间
+      shooterId:
+        type: string
+        description: 射手id
+      shoot_data_list:
+        type: array
+        description: 训练成绩列表
+        items:
+          $ref: '#definitions/shoot_data'
+  train_record_page:
+    type: object
+    properties:
+      pageNum:
+        type: integer
+        description: 页码
+      pageSize:
+        type: integer
+        description: 每页记录数
+      total:
+        type: integer
+        description: 记录总数
+      list:
+        type: array
+        items:
+          $ref: '#definitions/train_record'
