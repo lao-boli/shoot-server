@@ -1,19 +1,17 @@
 import asyncio
-
-from flasgger import Swagger
-from flask import Flask, jsonify, make_response, abort
-
-from .MyWebSocket.Server import WebSocketServer
-from .models import *
-from .exception import ResultError
-from .utils import MyJSONEncoder, ColoredLevelFormatter
-
-from flask import Flask, jsonify
-from flask_cors import CORS
-from flaskr.MySerial.SerialListener import start_listen_serial
-
 import logging
 import traceback
+
+from flasgger import Swagger
+from flask import Flask, jsonify
+from flask_cors import CORS
+
+from .MyWebSocket.Server import WebSocketServer
+from .exception import ResultError
+from .models import *
+# start_listen_serial 必须在 导入models后才能导入
+from flaskr.MySerial.SerialListener import start_listen_serial
+from .utils import MyJSONEncoder, ColoredLevelFormatter
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +38,7 @@ def get_ws():
 
 def create_app(test_config=None):
     app = Flask(__name__)
-    Swagger(app=app,template_file='doc/final.yml')
+    Swagger(app=app, template_file='doc/final.yml')
 
     CORS(app, resources={r'/*': {'supports_credentials': True}})
 
@@ -103,8 +101,6 @@ def create_app(test_config=None):
     from .api.auth import bp
     app.register_blueprint(bp)
 
-    for rule in app.url_map.iter_rules():
-        print('name={} path={}'.format(rule.endpoint, rule.rule))
     return app
 
 
