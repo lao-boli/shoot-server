@@ -44,7 +44,7 @@ def create_app(test_config=None):
 
     Swagger(app=app, template_file='doc/final.yml')
 
-    CORS(app, resources={r'/*': {'supports_credentials': True}})
+    CORS(app, resources={r'/*': {'supports_credentials': True, 'expose_headers': "Content-Disposition"}})
 
     setup_logging(app)
 
