@@ -1,3 +1,4 @@
+import sqlalchemy.exc
 from flask import (
     Blueprint, request, jsonify
 )
@@ -7,6 +8,7 @@ from flaskr import ResultError
 from flaskr.api.auth import login_required
 from flaskr.models import User, Shooter, base, Result
 import logging
+from sqlalchemy.exc import *
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +49,7 @@ def add_shooter():
             User.add_no_commit(copy, exclude=['id'])
             Shooter.add_no_commit(request.json)
         db.session.commit()
-    except Exception as e:
+    except DatabaseError as e:
         db.session.rollback()
         if 'Duplicate entry' in str(e):
             raise ResultError(message='键冲突')
@@ -57,7 +59,13 @@ def add_shooter():
             raise ResultError(message='非空字段为空')
         else:
             logger.warning(e)
-            raise ResultError(message='Database IntegrityError')
+            raise ResultError(message='Database Error')
+    except KeyError as e:
+        logger.warning(f"KeyError: {e}")
+        raise ResultError(message='非法参数')
+    except Exception as e:
+        logger.error(e)
+        raise ResultError(message='系统异常')
 
     return jsonify(Result.success(msg='添加射手成功'))
 
@@ -66,14 +74,14 @@ def add_shooter():
 @api.route('/update', methods=['POST'])
 def update_shooter():
     shooter = Shooter.update(request.json)
-    return jsonify(Result.success(msg='更新用户成功'))
+    return jsonify(Result.success(msg='更新射手成功'))
 
 
 @api.route('/delete/<int:shooter_id>', methods=['DELETE'])
 @login_required
 def delete_shooter(shooter_id):
     shooter = Shooter.delete(shooter_id)
-    return jsonify(Result.success(msg='删除用户成功'))
+    return jsonify(Result.success(msg='删除射手成功'))
 
 
 # not id
