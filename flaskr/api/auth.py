@@ -64,7 +64,7 @@ def login():
 
 @bp.route('/get-info')
 def get_info():
-    return jsonify(Result.success(data={'roles':['admin']}))
+    return jsonify(Result.success(data={'userId':session['user_id'],'roles':['admin']}))
 
 @bp.before_app_request
 def load_logged_in_user():

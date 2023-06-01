@@ -242,7 +242,7 @@ paths:
         in: query
       responses:
         '200':
-          description: 登录成功
+          description: success
           schema:
             type: object
             properties:
@@ -469,7 +469,7 @@ paths:
         in: query
       responses:
         '200':
-          description: 登录成功
+          description: success
           schema:
             type: object
             properties:
@@ -582,6 +582,207 @@ paths:
       - application/json
       parameters:
       - name: recordId
+        in: path
+        type: string
+        required: true
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 20000
+                description: 响应码
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                type: object
+  /api/user/get/{userId}:
+    get:
+      tags:
+      - 用户
+      summary: 获取单个用户
+      produces:
+      - application/json
+      parameters:
+      - name: userId
+        type: string
+        in: path
+        required: true
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 20000
+                description: 响应码
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                $ref: '#definitions/user'
+  /api/user/list:
+    get:
+      tags:
+      - 用户
+      summary: 获取用户列表
+      produces:
+      - application/json
+      parameters:
+      - name: id
+        type: string
+        in: query
+      - name: name
+        type: string
+        in: query
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 20000
+                description: 响应码
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                type: array
+                items:
+                  $ref: '#definitions/user'
+  /api/user/page:
+    get:
+      tags:
+      - 用户
+      summary: 获取用户分页列表
+      produces:
+      - application/json
+      parameters:
+      - name: pageNum
+        type: integer
+        description: 页码
+        in: query
+      - name: pageSize
+        type: integer
+        description: 每页记录数
+        in: query
+      - name: orderBy
+        type: string
+        description: 排序字段
+        in: query
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                example: 20000
+                description: 响应码
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                $ref: '#definitions/user_page'
+  /api/user/add:
+    post:
+      tags:
+      - 用户
+      summary: 添加用户
+      produces:
+      - application/json
+      parameters:
+      - name: user
+        in: body
+        schema:
+          $ref: '#definitions/userDTO'
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                description: 响应码
+                example: 20000
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                type: object
+  /api/user/update:
+    post:
+      tags:
+      - 用户
+      summary: 更新用户
+      produces:
+      - application/json
+      parameters:
+      - name: user
+        in: body
+        schema:
+          $ref: '#definitions/user'
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                description: 响应码
+                example: 20000
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                type: object
+  /api/user/change-password:
+    post:
+      tags:
+      - 用户
+      summary: 修改密码
+      produces:
+      - application/json
+      parameters:
+      - name: user
+        in: body
+        schema:
+          $ref: '#definitions/pwdDTO'
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                description: 响应码
+                example: 20000
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                type: object
+  /api/user/delete/{userId}:
+    delete:
+      tags:
+      - 用户
+      summary: 删除用户
+      produces:
+      - application/json
+      parameters:
+      - name: userId
         in: path
         type: string
         required: true
@@ -761,3 +962,61 @@ definitions:
         type: array
         items:
           $ref: '#definitions/train_record'
+  pwdDTO:
+    type: object
+    properties:
+      userId:
+        type: integer
+        description: 用户id
+      oldPassword:
+        type: string
+        description: 旧密码
+      newPassword:
+        type: string
+        description: 旧密码
+  userDTO:
+    type: object
+    properties:
+      username:
+        type: string
+        description: 用户账号名
+      password:
+        type: string
+        description: 用户账号密码
+      name:
+        type: string
+        description: 用户名字
+  user:
+    type: object
+    properties:
+      id:
+        type: integer
+        description: 用户id
+      username:
+        type: string
+        description: 用户账号名
+      name:
+        type: string
+        description: 用户名字
+      roleId:
+        type: string
+        description: 用户角色ID
+      createTime:
+        type: string
+        description: 用户创建时间
+  user_page:
+    type: object
+    properties:
+      pageNum:
+        type: integer
+        description: 页码
+      pageSize:
+        type: integer
+        description: 每页记录数
+      total:
+        type: integer
+        description: 记录总数
+      list:
+        type: array
+        items:
+          $ref: '#definitions/user'

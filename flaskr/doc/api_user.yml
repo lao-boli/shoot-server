@@ -1,13 +1,13 @@
 paths:
-  /api/shooter/get/{shooterId}:
+  /api/user/get/{userId}:
     get:
       tags:
-        - "射手"
-      summary: 获取单个射手
+        - "用户"
+      summary: 获取单个用户
       produces:
         - application/json
       parameters:
-        - name: shooterId
+        - name: userId
           type: string
           in: path
           required: true
@@ -26,13 +26,13 @@ paths:
                 type: string
                 description: 提示信息
               data:
-                $ref: "#definitions/shooter"
+                $ref: "#definitions/user"
 
-  /api/shooter/list:
+  /api/user/list:
     get:
       tags:
-        - "射手"
-      summary: 获取射手列表
+        - "用户"
+      summary: 获取用户列表
       produces:
         - application/json
       parameters:
@@ -59,13 +59,13 @@ paths:
               data:
                 type: array
                 items:
-                  $ref: "#definitions/shooter"
+                  $ref: "#definitions/user"
 
-  /api/shooter/page:
+  /api/user/page:
     get:
       tags:
-        - "射手"
-      summary: 获取射手分页列表
+        - "用户"
+      summary: 获取用户分页列表
       produces:
         - application/json
       parameters:
@@ -96,20 +96,20 @@ paths:
                 type: string
                 description: 提示信息
               data:
-                $ref: "#definitions/shooter_page"
+                $ref: "#definitions/user_page"
 
-  /api/shooter/add:
+  /api/user/add:
     post:
       tags:
-        - "射手"
-      summary: 添加射手
+        - "用户"
+      summary: 添加用户
       produces:
         - application/json
       parameters:
-        - name: shooter
+        - name: user
           in: body
           schema:
-            $ref: "#definitions/shooterDTO"
+            $ref: "#definitions/userDTO"
 
       responses:
         '200':
@@ -127,18 +127,18 @@ paths:
               data:
                 type: object
 
-  /api/shooter/update:
+  /api/user/update:
     post:
       tags:
-        - "射手"
-      summary: 更新射手
+        - "用户"
+      summary: 更新用户
       produces:
         - application/json
       parameters:
-        - name: shooter
+        - name: user
           in: body
           schema:
-            $ref: "#definitions/shooter"
+            $ref: "#definitions/user"
 
       responses:
         '200':
@@ -156,15 +156,43 @@ paths:
               data:
                 type: object
 
-  /api/shooter/delete/{shooterId}:
+  /api/user/change-password:
+    post:
+      tags:
+        - "用户"
+      summary: 修改密码
+      produces:
+        - application/json
+      parameters:
+        - name: user
+          in: body
+          schema:
+            $ref: "#definitions/pwdDTO"
+
+      responses:
+        '200':
+          description: success
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                description: 响应码
+                example: 20000
+              msg:
+                type: string
+                description: 提示信息
+              data:
+                type: object
+  /api/user/delete/{userId}:
     delete:
       tags:
-        - "射手"
-      summary: 删除射手
+        - "用户"
+      summary: 删除用户
       produces:
         - application/json
       parameters:
-        - name: shooterId
+        - name: userId
           in: path
           type: string
           required: true
@@ -186,36 +214,52 @@ paths:
                 type: object
 definitions:
 
-  shooterDTO:
+  pwdDTO:
     type: object
     properties:
-      id:
+      userId:
+        type: integer
+        description: 用户id
+      oldPassword:
         type: string
-        description: 射手id
+        description: 旧密码
+      newPassword:
+        type: string
+        description: 旧密码
+
+  userDTO:
+    type: object
+    properties:
       username:
         type: string
-        description: 射手账号名
+        description: 用户账号名
       password:
         type: string
-        description: 射手账号密码
+        description: 用户账号密码
       name:
         type: string
-        description: 射手名字
+        description: 用户名字
 
-  shooter:
+  user:
     type: object
     properties:
       id:
-        type: string
-        description: 射手id
+        type: integer
+        description: 用户id
       username:
         type: string
-        description: 射手账号名
+        description: 用户账号名
       name:
         type: string
-        description: 射手名字
+        description: 用户名字
+      roleId:
+        type: string
+        description: 用户角色ID
+      createTime:
+        type: string
+        description: 用户创建时间
 
-  shooter_page:
+  user_page:
     type: object
     properties:
       pageNum:
@@ -230,4 +274,4 @@ definitions:
       list:
         type: array
         items:
-          $ref: "#definitions/shooter"
+          $ref: "#definitions/user"

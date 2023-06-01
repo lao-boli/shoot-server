@@ -1,6 +1,7 @@
 from flask import (
     Blueprint, request, jsonify
 )
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from flaskr.api.auth import login_required
 from flaskr.models import User, base, Result
@@ -47,6 +48,24 @@ def add_user():
 def update_user():
     user = User.update(request.json)
     return jsonify(Result.success(msg='更新用户成功'))
+
+
+@login_required
+@api.route('/change-password', methods=['POST'])
+def change_password():
+    copy = request.json.copy()
+    if copy['oldPassword'] == copy['newPassword']:
+        return jsonify(Result.fail(msg='两次输入密码相同'))
+
+    user = User.get_by_id(copy['userId'])
+    if user is None:
+        return jsonify(Result.fail(msg='用户不存在'))
+    if not check_password_hash(user.password, copy['oldPassword']):
+        return jsonify(Result.fail(msg='原密码错误'))
+
+    copy['password'] = generate_password_hash(request.json['newPassword'])
+    user = User.update(copy)
+    return jsonify(Result.success(msg='修改密码成功'))
 
 
 @api.route('/delete/<int:user_id>', methods=['DELETE'])

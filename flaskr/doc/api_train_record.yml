@@ -102,7 +102,7 @@ paths:
 
       responses:
         '200':
-          description: 登录成功
+          description: success
           schema:
             type: object
             properties:

@@ -22,10 +22,13 @@ class User(Base):
     shooter_r = db.relationship('Shooter', uselist=False, backref='user')
     trainer_r = db.relationship('Trainer', uselist=False, backref='user')
 
-    def serialize(self):
+    def serialize(self, to_camel=True):
         s = super().serialize()
         del s['shooter_r']
         del s['trainer_r']
+        del s['password']
+        if to_camel:
+            s = self.to_camel(s)
         return s
 
     @classmethod
