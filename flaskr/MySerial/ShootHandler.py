@@ -43,8 +43,8 @@ class ShootHandler:
             asyncio.get_event_loop().create_task(ServerGroup.get_front().broadcast(
                 json.dumps(StyleFormatter.snake_to_camel_dict(coord), cls=MyJSONEncoder)))
             # http 测试采用这种方式
-            # asyncio.run(
-            #     ServerGroup.get_front().broadcast(json.dumps(StyleFormatter.snake_to_camel_dict(coord), cls=MyJSONEncoder)))
+            # asyncio.run(ServerGroup.get_front().broadcast(
+            #     json.dumps(StyleFormatter.snake_to_camel_dict(coord), cls=MyJSONEncoder)))
 
     @classmethod
     def start(cls, train_record_id):
@@ -144,24 +144,44 @@ class ShootHandler:
         shoot_data.score = round(score, 2)
 
     @classmethod
-    def score_number(cls, a: float, b: float, c: float, d: float, e: float):
-        if a > b:
+    def score_number(cls, data: float, passed: float, middle: float, good: float, excellent: float):
+        """
+        计算射击的分数,射击数据原始值比分数线值越小越优秀
+
+        :param data:     射击成绩原始值
+        :param passed:    及格分数值
+        :param middle:    中等分数值
+        :param good:      良好分数值
+        :param excellent: 优秀分数值
+        :return: 射击分数
+        """
+        if data > passed:
             return 25.0
-        elif b >= a > c:
-            return (a - b) / (c - b) * 50 + 25
-        elif c >= a > d:
-            return (a - c) / (d - c) * 25 + 75
-        return (a - d) / (e - d) * 10 + 90
+        elif passed >= data > middle:
+            return (data - passed) / (middle - passed) * 50 + 25
+        elif middle >= data > good:
+            return (data - middle) / (good - middle) * 25 + 75
+        return (data - good) / (excellent - good) * 10 + 90
 
     @classmethod
-    def ring_number(cls, a: float, b: float, c: float, d: float, e: float):
-        if a < b:
-            return (a / b) * 25.0
-        elif b <= a < c:
-            return (a - b) / (c - b) * 51 + 25
-        elif c <= a < d:
-            return (a - c) / (d - c) * 25 + 75
-        return (a - d) / (e - d) * 10 + 90
+    def ring_number(cls, ring: float, passed: float, middle: float, good: float, excellent: float):
+        """
+        计算射击的环值分数,环值比分数线值越大越优秀
+
+        :param ring: 环值
+        :param passed:    及格分数值
+        :param middle:    中等分数值
+        :param good:      良好分数值
+        :param excellent: 优秀分数值
+        :return: 环值分数
+        """
+        if ring < passed:
+            return (ring / passed) * 25.0
+        elif passed <= ring < middle:
+            return (ring - passed) / (middle - passed) * 51 + 25
+        elif middle <= ring < good:
+            return (ring - middle) / (good - middle) * 25 + 75
+        return (ring - good) / (excellent - good) * 10 + 90
 
 
 if __name__ == '__main__':
