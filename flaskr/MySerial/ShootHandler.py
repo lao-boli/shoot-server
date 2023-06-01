@@ -107,7 +107,7 @@ class ShootHandler:
                 shoot_data.gun_shaking = int(raw[6])
                 shoot_data.gun_shaking_rate = int(raw[7])
                 shoot_data.fire_shaking = int(raw[8])
-                shoot_data.fire_shaking_rate = int(raw[7])
+                shoot_data.fire_shaking_rate = int(raw[9])
                 cls.score(shoot_data)
                 # endregion
 
