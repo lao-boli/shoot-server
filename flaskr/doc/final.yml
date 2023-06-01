@@ -303,7 +303,7 @@ paths:
       - name: shooter
         in: body
         schema:
-          $ref: '#definitions/shooter'
+          $ref: '#definitions/shooterDTO'
       responses:
         '200':
           description: success
@@ -637,6 +637,21 @@ definitions:
       targetOnline:
         type: boolean
         description: 靶子在线
+  shooterDTO:
+    type: object
+    properties:
+      id:
+        type: string
+        description: 射手id
+      username:
+        type: string
+        description: 射手账号名
+      password:
+        type: string
+        description: 射手账号密码
+      name:
+        type: string
+        description: 射手名字
   shooter:
     type: object
     properties:
