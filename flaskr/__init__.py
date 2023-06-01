@@ -70,6 +70,12 @@ def create_app(test_config=None):
         response.status_code = 404
         return response
 
+    @app.errorhandler(405)
+    def handle_error(e):
+        response = jsonify({'error': '405'})
+        response.status_code = 405
+        return response
+
     @app.errorhandler(Exception)
     def handle_runtime_error(e):
         app.logger.error('{}'.format(e))
