@@ -56,7 +56,7 @@ def login():
         if error is None:
             session.clear()
             session['user_id'] = user.id
-            return jsonify(Result.success(msg='login successful',data={'token': 'logged in'}))
+            return jsonify(Result.success(msg='login successful', data={'token': 'logged in'}))
 
         flash(error)
     return jsonify(Result.fail(msg='login failed'))
@@ -64,7 +64,13 @@ def login():
 
 @bp.route('/get-info')
 def get_info():
-    return jsonify(Result.success(data={'userId':session['user_id'],'roles':['admin']}))
+    user = User.get_by_id(session['user_id'])
+    info = user.serialize()
+    info['userId'] = user.id
+    info['roles'] = [user.role_id]
+    del info['id']
+    return jsonify(Result.success(data=info))
+
 
 @bp.before_app_request
 def load_logged_in_user():

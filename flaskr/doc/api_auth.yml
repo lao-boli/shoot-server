@@ -90,12 +90,7 @@ paths:
         '200':
           description: A greeting message
           schema:
-            type: object
-            properties:
-              roles:
-                type: array
-                items:
-                  type: string
+            $ref: '#/definitions/info'
 
   /api/logout:
     get:
@@ -113,4 +108,27 @@ paths:
               message:
                 type: string
 definitions:
-  {}
+  info:
+    type: object
+    properties:
+      id:
+        type: integer
+        description: 用户id
+      username:
+        type: string
+        description: 用户账号名
+      name:
+        type: string
+        description: 用户名字
+      roleId:
+        type: string
+        description: 用户角色ID
+      roles:
+        type: array
+        description: 用户角色组
+        items:
+         type: string
+         description: 角色ID
+      createTime:
+        type: string
+        description: 用户创建时间
