@@ -145,27 +145,7 @@ class Base(db.Model, Serializer):
     def add_no_commit(cls, data, exclude=[]):
         filtered_data = cls.filter_dict(data, exclude=exclude)
         model = cls(**filtered_data)
-        try:
-            db.session.add(model)
-        except IntegrityError as e:
-            db.session.rollback()
-            if 'Duplicate entry' in str(e):
-                raise ResultError(message='键冲突')
-            elif 'foreign key' in str(e):
-                raise ResultError(message='外键所指的记录不存在')
-            elif 'cannot be null' in str(e):
-                raise ResultError(message='非空字段为空')
-            else:
-                logger.warning(e)
-                raise ResultError(message='Database IntegrityError')
-        except DataError as e:
-            db.session.rollback()
-            logger.warning(e)
-            raise ResultError(message='数据格式错误')
-        except DatabaseError as e:
-            db.session.rollback()
-            logger.error(e)
-            raise ResultError(message='数据库错误')
+        db.session.add(model)
         return model
 
     @classmethod
