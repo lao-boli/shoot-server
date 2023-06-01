@@ -142,8 +142,8 @@ class Base(db.Model, Serializer):
         return model
 
     @classmethod
-    def add_no_commit(cls, data):
-        filtered_data = cls.filter_dict(data)
+    def add_no_commit(cls, data, exclude=[]):
+        filtered_data = cls.filter_dict(data, exclude=exclude)
         model = cls(**filtered_data)
         try:
             db.session.add(model)

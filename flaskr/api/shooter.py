@@ -1,6 +1,7 @@
 from flask import (
     Blueprint, request, jsonify
 )
+from werkzeug.security import generate_password_hash
 
 from flaskr import ResultError
 from flaskr.api.auth import login_required
@@ -41,7 +42,9 @@ def get_shooter(shooter_id):
 def add_shooter():
     try:
         with db.session.begin_nested():
-            User.add_no_commit(request.json)
+            copy = request.json.copy()
+            copy['password'] = generate_password_hash(request.json['password'])
+            User.add_no_commit(copy, exclude=['id'])
             Shooter.add_no_commit(request.json)
         db.session.commit()
     except Exception as e:

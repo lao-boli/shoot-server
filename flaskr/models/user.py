@@ -1,5 +1,7 @@
+from datetime import datetime
+
 import sqlalchemy
-from sqlalchemy import Column, Integer, String, DateTime,BigInteger
+from sqlalchemy import Column, Integer, String, DateTime, BigInteger
 from sqlalchemy.exc import IntegrityError, NoResultFound
 from werkzeug.security import generate_password_hash
 from .base import Base, db
@@ -10,7 +12,7 @@ class User(Base):
     __tablename__ = 'user'
     __table_args__ = {'comment': '用户表'}
     id = Column(BigInteger, primary_key=True, comment='主键')
-    create_time = Column(DateTime, comment='创建时间')
+    create_time = Column(DateTime, default=datetime.now(), comment='创建时间')
     name = Column(String(50), nullable=True, comment='用户姓名')
     username = Column(String(255), unique=True, nullable=True, comment='账号名')
     password = Column(String(300), nullable=True, comment='密码')
@@ -33,7 +35,6 @@ class User(Base):
             return user
         except NoResultFound:
             return None
-
 
     @classmethod
     def update(cls, data: dict, key='userId', err_msg='未找到用户'):
