@@ -64,6 +64,11 @@ class ShootHandler:
     def decode(cls, raw: list) -> (dict, ShootData):
         """
         解码硬件数据\n
+        .. image:: file:///D:/IdeaProjects/shoot-server/flaskr/doc/data_info_frame.png
+        <BLANKLINE>
+
+        .. image:: file:///D:/IdeaProjects/shoot-server/flaskr/doc/register_info_frame.png
+
         e.g:\n
         轨迹坐标:
             [0x16, 0x10, 0x10, 0x01, 0x56, 0x24, 0x15, 0x56, 0x14, 0x18, 0x46, 0x55, 0x17, 0x00, 0x88]
