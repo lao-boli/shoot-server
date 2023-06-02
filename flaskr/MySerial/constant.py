@@ -58,6 +58,7 @@ ACK = 8
 BULLET = 9
 
 #  值
-CONFIRM_ENROLL = 0x00
+CONFIRM_ENROLL = 0x99
+ENROLL_REQUEST = 0x00
 FRAME_END = 0x99
 """变长数据帧结束标志,当前版本无意义,但需下发消息时需添加"""

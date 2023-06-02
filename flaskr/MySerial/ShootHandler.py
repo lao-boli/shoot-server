@@ -3,7 +3,7 @@ import json
 import random
 from flaskr import ShootData
 import asyncio
-
+from constant import *
 from flaskr.MyWebSocket.ServerGroup import ServerGroup
 from flaskr.utils import StyleFormatter
 from flaskr.utils.MyJsonEncoder import MyJSONEncoder
@@ -79,22 +79,22 @@ class ShootHandler:
         :return: coord - 轨迹坐标 , shoot_data - 射击数据
         """
         # 第一位 不是0x16丢掉
-        if 0x16 != raw[0]:
+        if CORE_WEB != raw[HEADER1]:
             return None, None
         # 第三位 用来判断上行下行信息的 后端发过去是01 收到的是10
-        if 0x10 != raw[2]:
+        if UPLINK != raw[HEADER3]:
             return None, None
 
-        # 第二位 10 为坐标信息
-        if 0x10 == raw[1]:
+        # 第二位 0x10 为数据信息
+        if DATA == raw[HEADER2]:
             coord = {}
-            coord['axisX'] = int(raw[10]) + int(raw[11]) / 100
-            coord['axisY'] = int(raw[12]) + int(raw[13]) / 100
+            coord['axisX'] = int(raw[AXIS_X_HIGH]) + int(raw[AXIS_X_LOW]) / 100
+            coord['axisY'] = int(raw[AXIS_Y_HIGH]) + int(raw[AXIS_Y_LOW]) / 100
             # 轨迹数据
-            if 0x00 == raw[3]:
+            if CURVE == raw[DATA_TYPE]:
                 coord['curve'] = True
             # 射击数据
-            elif 0x01 == raw[3]:
+            elif SHOOT_DATA == raw[DATA_TYPE]:
                 coord['curve'] = False
                 coord['sequence'] = cls.sequence
 
@@ -102,12 +102,12 @@ class ShootHandler:
                 shoot_data = ShootData()
                 shoot_data.sequence = cls.sequence
                 shoot_data.shoot_time = datetime.datetime.now()
-                shoot_data.hit_ring_number = int(raw[4]) / 10
-                shoot_data.aim_ring_number = int(raw[5]) / 10
-                shoot_data.gun_shaking = int(raw[6])
-                shoot_data.gun_shaking_rate = int(raw[7])
-                shoot_data.fire_shaking = int(raw[8])
-                shoot_data.fire_shaking_rate = int(raw[9])
+                shoot_data.hit_ring_number = int(raw[HIT_RING_NUMBER]) / 10
+                shoot_data.aim_ring_number = int(raw[AIM_RING_NUMBER]) / 10
+                shoot_data.gun_shaking = int(raw[GUN_SHAKING])
+                shoot_data.gun_shaking_rate = int(raw[GUN_SHAKING_RATE])
+                shoot_data.fire_shaking = int(raw[FIRE_SHAKING])
+                shoot_data.fire_shaking_rate = int(raw[FIRE_SHAKING_RATE])
                 cls.score(shoot_data)
                 # endregion
 
@@ -120,9 +120,9 @@ class ShootHandler:
             return coord, None
 
         # 第九位 ack 只有第二位00有效
-        if 0x00 == raw[8]:
-            raw[8] = 0x99
-            raw[2] = 0x01
+        if ENROLL_REQUEST == raw[ACK]:
+            raw[ACK] = CONFIRM_ENROLL
+            raw[HEADER3] = DOWNLINK
             # 向串口下发收到注册消息
             from flaskr.MySerial.SerialListener import handle
             handle.write_data(bytes(raw))
