@@ -125,5 +125,7 @@ def setup_logging(app):
         "\033[36m%(name)s\033[0m"
         "\033[38;2;187;187;187m: %(message)s\033[0m"
     )
-    for handler in app.logger.handlers:
-        handler.setFormatter(formatter)
+    app.logger.handlers = []
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(fmt=formatter)
+    app.logger.addHandler(console_handler)
