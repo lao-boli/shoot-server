@@ -3,7 +3,7 @@ import json
 import random
 from flaskr import ShootData
 import asyncio
-from constant import *
+from .constant import *
 from flaskr.MyWebSocket.ServerGroup import ServerGroup
 from flaskr.utils import StyleFormatter
 from flaskr.utils.MyJsonEncoder import MyJSONEncoder
