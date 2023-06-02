@@ -119,13 +119,43 @@ def create_app(test_config=None):
 
 def setup_logging(app):
     app.logger.setLevel(logging.DEBUG)
+    # console logger
     formatter = ColoredLevelFormatter(
         "\033[38;2;187;187;187m%(asctime)s\033[0m "
         "%(levelname)s "
         "\033[36m%(name)s\033[0m"
         "\033[38;2;187;187;187m: %(message)s\033[0m"
     )
-    app.logger.handlers = []
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(fmt=formatter)
+
+    # file logger
+    file_formatter = logging.Formatter("%(asctime)s %(levelname)s %(name)s %(message)s")
+    log_folder = 'log'
+    import os
+    os.makedirs(f'{log_folder}/info', exist_ok=True)
+    os.makedirs(f'{log_folder}/error', exist_ok=True)
+    from logging.handlers import TimedRotatingFileHandler
+    file_info_handler = TimedRotatingFileHandler(filename='./log/info/shoot.log', encoding='utf-8', interval=1,
+                                                 when='midnight', backupCount=7)
+    file_info_handler.setLevel('INFO')
+    file_info_handler.setFormatter(fmt=file_formatter)
+    file_info_handler.flushTime = 5.0
+
+    file_error_handler = TimedRotatingFileHandler(filename='./log/error/shoot.log', encoding='utf-8', interval=1,
+                                                  when='midnight', backupCount=7)
+    file_error_handler.setLevel('ERROR')
+
+    file_error_handler.setFormatter(fmt=file_formatter)
+    file_error_handler.flushTime = 5.0
+
+    app.logger.handlers.clear()
+    app.logger.addHandler(file_info_handler)
+    app.logger.addHandler(file_error_handler)
     app.logger.addHandler(console_handler)
+
+    # 接管sqlalchemy的log
+    logging.getLogger('sqlalchemy.engine.Engine').handlers.clear()
+    logging.getLogger('sqlalchemy.engine.Engine').addHandler(console_handler)
+    logging.getLogger('sqlalchemy.engine.Engine').addHandler(file_info_handler)
+    logging.getLogger('sqlalchemy.engine.Engine').addHandler(file_error_handler)
