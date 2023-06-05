@@ -46,6 +46,8 @@ def add_shooter():
         with db.session.begin_nested():
             copy = request.json.copy()
             copy['password'] = generate_password_hash(request.json['password'])
+            # 强制设置射手用户角色
+            copy['role_id'] = 'shooter'
             User.add_no_commit(copy, exclude=['id'])
             Shooter.add_no_commit(request.json)
         db.session.commit()
