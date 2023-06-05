@@ -4,6 +4,7 @@ from flask import (
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from flaskr.api.auth import login_required
+from flaskr.decorator import requires_roles
 from flaskr.models import User, base, Result
 import logging
 
@@ -29,6 +30,7 @@ def page_users():
 
 @api.route('/get/<int:user_id>', methods=['GET'])
 @login_required
+@requires_roles(['admin'])
 def get_user(user_id):
     user = User.get_by_id(user_id)
     if user is None:
