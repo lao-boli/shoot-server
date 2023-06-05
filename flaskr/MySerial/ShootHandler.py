@@ -61,7 +61,9 @@ class ShootHandler:
         cls.train_record_id = None
 
     @classmethod
-    def decode(cls, raw: list) -> (dict, ShootData):
+    def decode(cls, raw: list) -> tuple[None, None] \
+                                  | tuple[dict[str, float | bool | int], ShootData] \
+                                  | tuple[dict[str, float | bool | int], None]:
         """
         解码硬件数据\n
         .. image:: file:///D:/IdeaProjects/shoot-server/flaskr/doc/data_info_frame.png
@@ -76,7 +78,7 @@ class ShootHandler:
             [0x16, 0x20, 0x01, 0x01, 0x56, 0x24, 0x15, 0x56, 0x14, 0x18, 0x46, 0x55, 0x17, 0x00, 0x88]
 
         :param raw: 16进制数组
-        :return: coord - 轨迹坐标 , shoot_data - 射击数据
+        :return: coord: :class:`dict` - 轨迹坐标 , shoot_data: :class:`ShootData` - 射击数据
         """
         # 第一位 不是0x16丢掉
         if CORE_WEB != raw[HEADER1]:
@@ -119,6 +121,7 @@ class ShootHandler:
             print(coord)
             return coord, None
 
+        # TODO: maybe cause bug, determine HEADER2 first in future
         # 第九位 ack 只有第二位00有效
         if ENROLL_REQUEST == raw[ACK]:
             raw[ACK] = CONFIRM_ENROLL
