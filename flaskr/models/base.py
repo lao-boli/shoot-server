@@ -90,38 +90,22 @@ class Base(db.Model, Serializer):
     def add(cls, data):
         filtered_data = cls.filter_dict(data)
         model = cls(**filtered_data)
-        try:
-            db.session.add(model)
-            db.session.commit()
-        except IntegrityError as e:
-            db.session.rollback()
-            if 'Duplicate entry' in str(e):
-                raise ResultError(message='键冲突')
-            elif 'foreign key' in str(e):
-                raise ResultError(message='外键所指的记录不存在')
-            elif 'cannot be null' in str(e):
-                raise ResultError(message='非空字段为空')
-            else:
-                logger.warning(e)
-                raise ResultError(message='Database IntegrityError')
-        except DataError as e:
-            db.session.rollback()
-            logger.warning(e)
-            raise ResultError(message='数据格式错误')
-        except DatabaseError as e:
-            db.session.rollback()
-            logger.error(e)
-            raise ResultError(message='数据库错误')
-        return model
+        return cls.add_model(model,
+                             print_warning_log=lambda e: logger.warning(f'{cls}: {e}\n INPUT JSON: {data}\n {model.serialize()}'),
+                             print_error_log=lambda e: logger.warning(f'{cls}: {e}\n INPUT JSON: {data}\n {model.serialize()}'))
 
     @classmethod
-    def add_self(cls, data):
-        model = data
+    def add_model(cls, model, print_warning_log: callable = None, print_error_log: callable = None):
         try:
             db.session.add(model)
             db.session.commit()
         except IntegrityError as e:
             db.session.rollback()
+            if print_warning_log is not None:
+                print_warning_log(e)
+            else:
+                logger.warning(f'{cls}: {e}\n INPUT MODEL: {model.serialize()}')
+
             if 'Duplicate entry' in str(e):
                 raise ResultError(message='键冲突')
             elif 'foreign key' in str(e):
@@ -129,15 +113,20 @@ class Base(db.Model, Serializer):
             elif 'cannot be null' in str(e):
                 raise ResultError(message='非空字段为空')
             else:
-                logger.warning(e)
                 raise ResultError(message='Database IntegrityError')
         except DataError as e:
             db.session.rollback()
-            logger.warning(e)
+            if print_warning_log is not None:
+                print_warning_log(e)
+            else:
+                logger.warning(f'{cls}: {e}\n INPUT MODEL: {model.serialize()}')
             raise ResultError(message='数据格式错误')
         except DatabaseError as e:
             db.session.rollback()
-            logger.error(e)
+            if print_error_log is not None:
+                print_error_log(e)
+            else:
+                logger.error(f'{cls}: {e}\n INPUT MODEL: {model.serialize()}')
             raise ResultError(message='数据库错误')
         return model
 

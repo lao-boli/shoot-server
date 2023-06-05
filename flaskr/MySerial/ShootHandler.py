@@ -36,7 +36,7 @@ class ShootHandler:
         if shoot_data is not None and cls.train_record_id is not None:
             # 插入数据库
             shoot_data.record_id = cls.train_record_id
-            ShootData.add_self(shoot_data)
+            ShootData.add_model(shoot_data)
 
         if coord is not None:
             # 串口测试与真机采用这种方式

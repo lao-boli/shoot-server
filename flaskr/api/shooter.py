@@ -53,6 +53,7 @@ def add_shooter():
         db.session.commit()
     except DatabaseError as e:
         db.session.rollback()
+        logger.warning(f"{e}\n INPUT JSON {request.json}")
         if 'Duplicate entry' in str(e):
             raise ResultError(message='键冲突')
         elif 'foreign key' in str(e):
@@ -60,13 +61,12 @@ def add_shooter():
         elif 'cannot be null' in str(e):
             raise ResultError(message='非空字段为空')
         else:
-            logger.warning(e)
             raise ResultError(message='Database Error')
     except KeyError as e:
-        logger.warning(f"KeyError: {e}")
+        logger.warning(f"KeyError: {e}\n INPUT JSON {request.json}")
         raise ResultError(message='非法参数')
     except Exception as e:
-        logger.error(e)
+        logger.error(f"{e}\n INPUT JSON {request.json}")
         raise ResultError(message='系统异常')
 
     return jsonify(Result.success(msg='添加射手成功'))
