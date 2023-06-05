@@ -8,6 +8,8 @@ from flaskr.decorator import requires_roles
 from flaskr.models import User, base, Result
 import logging
 
+from flaskr.utils import auth_params
+
 logger = logging.getLogger(__name__)
 
 api = Blueprint('user', __name__, url_prefix='/api/user')
@@ -17,7 +19,7 @@ db = base.db
 @api.route('/list', methods=['GET'])
 @login_required
 def list_users():
-    users = User.list(request.args)
+    users = User.list(auth_params(['admin'], {'name': 'name'}))
     return jsonify(Result.success(data=User.serialize_list(users)))
 
 
