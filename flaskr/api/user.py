@@ -8,7 +8,6 @@ from flaskr.decorator import requires_roles
 from flaskr.models import User, base, Result
 import logging
 
-from flaskr.utils import auth_params
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +18,7 @@ db = base.db
 @api.route('/list', methods=['GET'])
 @login_required
 def list_users():
-    users = User.list(auth_params(['shooter'], {'name': 'name'}))
+    users = User.list(request.args)
     return jsonify(Result.success(data=User.serialize_list(users)))
 
 
@@ -32,7 +31,6 @@ def page_users():
 
 @api.route('/get/<int:user_id>', methods=['GET'])
 @login_required
-@requires_roles(['admin'])
 def get_user(user_id):
     user = User.get_by_id(user_id)
     if user is None:
@@ -42,6 +40,7 @@ def get_user(user_id):
 
 @api.route('/add', methods=['POST'])
 @login_required
+@requires_roles(['admin'])
 def add_user():
     user = User.add(request.json)
     return jsonify(Result.success(msg='添加用户成功'))
@@ -49,6 +48,7 @@ def add_user():
 
 @login_required
 @api.route('/update', methods=['POST'])
+@requires_roles(['admin'])
 def update_user():
     user = User.update(request.json)
     return jsonify(Result.success(msg='更新用户成功'))
@@ -74,6 +74,7 @@ def change_password():
 
 @api.route('/delete/<int:user_id>', methods=['DELETE'])
 @login_required
+@requires_roles(['admin'])
 def delete_user(user_id):
     user = User.delete(user_id)
     return jsonify(Result.success(msg='删除用户成功'))
@@ -89,5 +90,6 @@ def get_user_no_id():
 
 @api.route('/delete', methods=['DELETE'])
 @login_required
+@requires_roles(['admin'])
 def delete_user_no_id():
     return jsonify(Result.fail(msg='必须携带id'))

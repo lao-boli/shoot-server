@@ -2,13 +2,16 @@ import json
 from datetime import datetime
 
 from flask import (
-    Blueprint, request, jsonify
+    Blueprint, request, jsonify, g
 )
 
 from flaskr.MySerial.ShootHandler import ShootHandler
 from flaskr.api.auth import login_required
+from flaskr.decorator import requires_roles
 from flaskr.models import TrainRecord, base, Result
 import logging
+
+from flaskr.utils import auth_params, auth_params_direct
 
 logger = logging.getLogger(__name__)
 
@@ -19,14 +22,15 @@ db = base.db
 @api.route('/list', methods=['GET'])
 @login_required
 def list_train_records():
-    train_records = TrainRecord.list(request.args)
+    train_records = TrainRecord.list(auth_params(['shooter'], {'username': 'username'}))
     return jsonify(Result.success(data=TrainRecord.serialize_list(train_records)))
 
 
 @api.route('/page', methods=['GET'])
 @login_required
 def page_train_records():
-    page_info = TrainRecord.page_to_dict(request.args)
+    page_info = TrainRecord.page_to_dict(
+        auth_params_direct(['shooter'], {'shooterId': g.user.shooter_r.id if g.user.shooter_r else None}))
     return jsonify(Result.success(data=page_info))
 
 
@@ -71,6 +75,7 @@ def update_train_record():
 
 @api.route('/delete/<string:train_record_id>', methods=['DELETE'])
 @login_required
+@requires_roles(['admin', 'trainer'])
 def delete_train_record(train_record_id):
     train_record = TrainRecord.delete(train_record_id)
     return jsonify(Result.success(msg='删除训练记录成功'))
@@ -86,5 +91,6 @@ def get_train_record_no_id():
 
 @api.route('/delete', methods=['DELETE'])
 @login_required
+@requires_roles(['admin', 'trainer'])
 def delete_train_record_no_id():
     return jsonify(Result.fail(msg='必须携带id'))

@@ -52,6 +52,8 @@ class Shooter(Base):
             query = query.filter(Shooter.id == params.get('id'))
         if params.get('name') is not None:
             query = query.filter(User.name.like('%' + params.get('name')+'%'))
+        if params.get('username') is not None:
+            query = query.filter(User.username == params.get('username'))
 
         page = query.paginate(page=page_num, per_page=page_size)
         return page

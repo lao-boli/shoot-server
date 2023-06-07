@@ -6,9 +6,12 @@ from werkzeug.security import generate_password_hash
 
 from flaskr import ResultError
 from flaskr.api.auth import login_required
+from flaskr.decorator import requires_roles
 from flaskr.models import User, Shooter, base, Result
 import logging
 from sqlalchemy.exc import *
+
+from flaskr.utils import auth_params,auth_params_direct
 
 logger = logging.getLogger(__name__)
 
@@ -19,14 +22,14 @@ db = base.db
 @api.route('/list', methods=['GET'])
 @login_required
 def list_shooters():
-    shooters = Shooter.list(request.args)
+    shooters = Shooter.list(auth_params(['shooter'], {'username': 'username'}))
     return jsonify(Result.success(data=Shooter.serialize_list(shooters)))
 
 
 @api.route('/page', methods=['GET'])
 @login_required
 def page_shooters():
-    page_info = Shooter.page_to_dict(request.args)
+    page_info = Shooter.page_to_dict(auth_params(['shooter'], {'username': 'username'}))
     return jsonify(Result.success(data=page_info))
 
 
@@ -41,6 +44,7 @@ def get_shooter(shooter_id):
 
 @api.route('/add', methods=['POST'])
 @login_required
+@requires_roles(['admin', 'trainer'])
 def add_shooter():
     try:
         with db.session.begin_nested():
@@ -74,6 +78,7 @@ def add_shooter():
 
 @login_required
 @api.route('/update', methods=['POST'])
+@requires_roles(['admin', 'trainer'])
 def update_shooter():
     shooter = Shooter.update(request.json)
     return jsonify(Result.success(msg='更新射手成功'))
@@ -81,6 +86,7 @@ def update_shooter():
 
 @api.route('/delete/<int:shooter_id>', methods=['DELETE'])
 @login_required
+@requires_roles(['admin', 'trainer'])
 def delete_shooter(shooter_id):
     shooter = Shooter.delete(shooter_id)
     return jsonify(Result.success(msg='删除射手成功'))
@@ -96,5 +102,6 @@ def get_shooter_no_id():
 
 @api.route('/delete', methods=['DELETE'])
 @login_required
+@requires_roles(['admin', 'trainer'])
 def delete_shooter_no_id():
     return jsonify(Result.fail(msg='必须携带id'))
