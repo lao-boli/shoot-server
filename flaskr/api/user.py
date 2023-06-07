@@ -19,7 +19,7 @@ db = base.db
 @api.route('/list', methods=['GET'])
 @login_required
 def list_users():
-    users = User.list(auth_params(['admin'], {'name': 'name'}))
+    users = User.list(auth_params(['shooter'], {'name': 'name'}))
     return jsonify(Result.success(data=User.serialize_list(users)))
 
 
