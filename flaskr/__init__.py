@@ -11,7 +11,7 @@ from .exception import ResultError
 from .models import *
 # start_listen_serial 必须在 导入models后才能导入
 from flaskr.MySerial.SerialListener import start_listen_serial
-from .utils import MyJSONEncoder, ColoredLevelFormatter
+from .utils import MyJSONEncoder, ColoredLevelFormatter, NoANSIFormatter
 import flask_excel as excel
 
 logger = logging.getLogger(__name__)
@@ -130,7 +130,7 @@ def setup_logging(app):
     console_handler.setFormatter(fmt=formatter)
 
     # file logger
-    file_formatter = logging.Formatter("%(asctime)s %(levelname)s %(name)s %(message)s")
+    file_formatter = NoANSIFormatter("%(asctime)s %(levelname)s %(name)s %(message)s")
     log_folder = 'log'
     import os
     os.makedirs(f'{log_folder}/info', exist_ok=True)
