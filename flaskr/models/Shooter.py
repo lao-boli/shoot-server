@@ -48,11 +48,11 @@ class Shooter(Base):
 
         query = db.session.query(Shooter).join(User)
 
-        if cls.filter_dict(params).get('id') is not None:
+        if cls.filter_dict(params).get('id'):
             query = query.filter(Shooter.id == params.get('id'))
-        if params.get('name') is not None:
+        if params.get('name'):
             query = query.filter(User.name.like('%' + params.get('name')+'%'))
-        if params.get('username') is not None:
+        if params.get('username'):
             query = query.filter(User.username == params.get('username'))
 
         page = query.paginate(page=page_num, per_page=page_size)

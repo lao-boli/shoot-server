@@ -48,11 +48,12 @@ class TrainRecord(Base):
 
         query = db.session.query(TrainRecord).join(Shooter).join(User)
 
-        if cls.filter_dict(params).get('id') is not None:
+        # 存在该参数并且不为空
+        if cls.filter_dict(params).get('id'):
             query = query.filter(TrainRecord.id == params.get('id'))
-        if params.get('shooterId') is not None and len(params.get('shooterId')) > 0:
+        if params.get('shooterId'):
             query = query.filter(Shooter.id == params.get('shooterId'))
-        if params.get('shooterName') is not None:
+        if params.get('shooterName'):
             query = query.filter(User.name.like('%' + params.get('shooterName') + '%'))
 
         range_param = cls.filter_range_params(dict(params))
