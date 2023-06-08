@@ -42,6 +42,14 @@ class TrainRecord(Base):
         return records
 
     @classmethod
+    def list_by_ids(cls, params):
+        query = cls.init_query(params=params)
+        records = query.filter(cls.id.in_(params.get('ids'))).all()
+        for record in records:
+            record.shoot_data_list = record.shoot_data_r.all()
+        return records
+
+    @classmethod
     def page(cls, params):
         page_num = int(params.get('pageNum', 1))
         page_size = int(params.get('pageSize', 10))
