@@ -11,5 +11,28 @@ paths:
           description: 导出成功
           schema:
             type: file
+  /api/download/excel/train-record/ids:
+    post:
+      tags:
+        - "下载"
+      summary: 通过训练记录的ids下载训练记录excel
+      produces:
+        - application/octet-stream
+      parameters:
+        - name: ids
+          in: body
+          schema:
+            type: object
+            properties:
+              ids:
+                type: array
+                items:
+                  type: string
+                description: 训练记录ids
+      responses:
+        '200':
+          description: 导出成功
+          schema:
+            type: file
 definitions:
   {}
