@@ -75,9 +75,9 @@ class TrainRecord(Base):
         return page
 
     @classmethod
-    def update(cls, data: dict, key='dataId', err_msg='未找到射击数据'):
+    def update(cls, data: dict, key='dataId', err_msg='未找到训练记录数据'):
         super().update(data, key, err_msg)
 
     @classmethod
-    def delete(cls, model_id, err_msg='未找到射击数据'):
+    def delete(cls, model_id, err_msg='未找到训练记录数据'):
         super().delete(model_id, err_msg)
