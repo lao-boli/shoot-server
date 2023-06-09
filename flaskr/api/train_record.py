@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 
 from flask import (
-    Blueprint, request, jsonify, g
+    Blueprint, request, jsonify, g, make_response
 )
 
 from flaskr.MySerial.ShootHandler import ShootHandler
@@ -49,14 +49,19 @@ def start_train():
     shooter_id = request.json['shooterId']
     train_record = TrainRecord.add({'shooter_id': shooter_id, 'train_time': datetime.now()})
     ShootHandler.start(train_record_id=train_record.id)
-    return jsonify(Result.success(msg='开始训练', data=train_record.serialize()))
+    # XXX 直接返回空字符串或许会更好处理一些,但是写都写了,就这样吧
+    resp = make_response(jsonify(Result.success(msg='开始训练', data=train_record.serialize())))
+    resp.headers['hide-msg'] = True
+    return resp
 
 
 @api.route('/stop', methods=['POST'])
 @login_required
 def stop_train():
     ShootHandler.stop()
-    return jsonify(Result.success(msg='结束训练'))
+    resp = make_response(jsonify(Result.success(msg='结束训练')))
+    resp.headers['hide-msg'] = True
+    return resp
 
 
 @api.route('/add', methods=['POST'])
