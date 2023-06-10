@@ -20,7 +20,7 @@ db = base.db
 
 from flaskr.MyWebSocket.ServerGroup import ServerGroup
 
-ws_server = ServerGroup.get_front()
+# ws_server = ServerGroup.get_front()
 
 
 @api.route('/test-decode', methods=['GET'])
@@ -67,11 +67,11 @@ def config():
 @api.route('/online', methods=['GET'])
 def online():
     dev_state = {'type': 'devState', 'gunOnline': True, 'targetOnline': True}
-    asyncio.run(ws_server.broadcast(json.dumps(dev_state)))
+    asyncio.run(ServerGroup.get_front().broadcast(json.dumps(dev_state)))
     return jsonify(Result.success(data=dev_state))
 
 
 @api.route('/offline', methods=['GET'])
 def offline():
-    asyncio.run(ws_server.broadcast(json.dumps({'type': 'devState', 'gunOnline': False, 'targetOnline': False})))
+    asyncio.run(ServerGroup.get_front().broadcast(json.dumps({'type': 'devState', 'gunOnline': False, 'targetOnline': False})))
     return jsonify(Result.success())
