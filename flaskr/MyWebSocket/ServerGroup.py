@@ -1,10 +1,8 @@
 from typing import Dict, Any
 from typing import TYPE_CHECKING
 
-
 if TYPE_CHECKING:
     from websocket.server import WebsocketServer
-
 
 from flaskr.MyWebSocket import Server
 
@@ -41,4 +39,4 @@ class ServerGroup:
 
         :return: 和前端进行通信的 :class:`WebsocketServer`.
         """
-        return cls.server_map['front']
+        return cls.server_map.get('front')

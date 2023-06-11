@@ -1,8 +1,11 @@
 import asyncio
 
+import serial
 import serial_asyncio
 
 from flaskr.MySerial.ShootHandler import ShootHandler
+import logging
+logger = logging.getLogger(__name__)
 
 
 class SerialProtocol(asyncio.Protocol):
@@ -37,5 +40,9 @@ handle = SerialProtocol()
 
 
 async def start_listen_serial():
-    await serial_asyncio.create_serial_connection(asyncio.get_event_loop(),
-                                                  lambda: handle, 'COM2', 9600)
+    try:
+        await serial_asyncio.create_serial_connection(
+            asyncio.get_event_loop(),
+            lambda: handle, 'COM3', 9600)
+    except serial.SerialException as e:
+        logger.error(f"Serial Exception occurred: {e}")
