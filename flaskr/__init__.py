@@ -16,7 +16,7 @@ import flask_excel as excel
 
 logger = logging.getLogger(__name__)
 
-server = WebSocketServer(port=9001, name='front')
+server = WebSocketServer(port=9001, name='fronat')
 
 
 async def main():
@@ -78,8 +78,7 @@ def create_app(test_config=None):
 
     @app.errorhandler(Exception)
     def handle_runtime_error(e):
-        app.logger.error('{}'.format(e))
-        traceback.print_exc()
+        app.logger.error(f'{"{}".format(e)}\n{traceback.format_exc()}')
         return jsonify(Result.fail(msg='未知异常'))
 
     @app.errorhandler(ResultError)
@@ -141,6 +140,7 @@ def setup_logging(app):
     file_info_handler.setLevel('INFO')
     file_info_handler.setFormatter(fmt=file_formatter)
     file_info_handler.flushTime = 5.0
+    file_info_handler.suffix = '%Y-%m-%d.log'
 
     file_error_handler = TimedRotatingFileHandler(filename='./log/error/shoot.log', encoding='utf-8', interval=1,
                                                   when='midnight', backupCount=7)
@@ -148,6 +148,7 @@ def setup_logging(app):
 
     file_error_handler.setFormatter(fmt=file_formatter)
     file_error_handler.flushTime = 5.0
+    file_error_handler.suffix = '%Y-%m-%d.log'
 
     app.logger.handlers.clear()
     app.logger.addHandler(file_info_handler)
