@@ -16,7 +16,7 @@ import flask_excel as excel
 
 logger = logging.getLogger(__name__)
 
-server = WebSocketServer(port=9001, name='fronat')
+server = WebSocketServer(port=9001, name='front')
 
 
 async def main():

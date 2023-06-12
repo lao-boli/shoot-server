@@ -1,6 +1,8 @@
 from typing import Dict, Any
 from typing import TYPE_CHECKING
 
+from flaskr.exception import ResultError
+
 if TYPE_CHECKING:
     from websocket.server import WebsocketServer
 
@@ -39,4 +41,7 @@ class ServerGroup:
 
         :return: 和前端进行通信的 :class:`WebsocketServer`.
         """
-        return cls.server_map.get('front')
+        ws = cls.server_map.get('front')
+        if ws is None:
+            raise ResultError(message='获取和前端进行通信的WebSocketServer失败')
+        return ws
