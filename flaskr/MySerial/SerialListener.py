@@ -5,6 +5,7 @@ import serial_asyncio
 
 from flaskr.MySerial.ShootHandler import ShootHandler
 import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -12,6 +13,11 @@ class SerialProtocol(asyncio.Protocol):
 
     def __init__(self):
         self.transport = None
+        self.count = 0
+        self.data_cache = None
+
+    def reset_count(self):
+        self.count = 0
 
     def connection_made(self, transport):
         self.transport = transport
@@ -20,7 +26,20 @@ class SerialProtocol(asyncio.Protocol):
     def data_received(self, data):
         # 处理接收到的数据
         print(list(data))
-        ShootHandler.on_recv(list(data))
+        if self.data_cache is None:
+            self.data_cache = list(data)
+            self.count += 1
+        else:
+            self.data_cache.extend(data)
+            self.count += 1
+            # retry times : 3
+            if len(self.data_cache) < 15 or self.count < 3:
+                self.pause_reading()
+            else:
+                print('data_cache: ', self.data_cache)
+                ShootHandler.on_recv(list(self.data_cache))
+                self.reset_count()
+                self.data_cache = None
 
     def write_data(self, data: bytes):
         self.transport.write(data)
@@ -35,14 +54,34 @@ class SerialProtocol(asyncio.Protocol):
     def resume_writing(self):
         print('resume writing')
 
+    def pause_reading(self):
+        print('pause reading')
+        # This will stop the callbacks to data_received
+        self.transport.pause_reading()
+
+    def resume_reading(self):
+        # This will start the callbacks to data_received again with all data that has been received in the meantime.
+        # print('resume reading')
+        self.transport.resume_reading()
+
 
 handle = SerialProtocol()
 
 
 async def start_listen_serial():
     try:
-        await serial_asyncio.create_serial_connection(
-            asyncio.get_event_loop(),
-            lambda: handle, 'COM3', 9600)
+        transport, protocol = await serial_asyncio.create_serial_connection(asyncio.get_event_loop(), lambda: handle,
+                                                                            '/dev/ttyUSB1', 9600)
+
+        while True:
+            # 每隔30ms读取分片数据
+            await asyncio.sleep(0.03)
+            protocol.resume_reading()
     except serial.SerialException as e:
         logger.error(f"Serial Exception occurred: {e}")
+
+
+if __name__ == '__main__':
+    asyncio.run(start_listen_serial())
+    while 1:
+        pass

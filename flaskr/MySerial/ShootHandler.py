@@ -31,6 +31,9 @@ class ShootHandler:
 
         from app import app
         app.app_context().push()
+        # 数据长度小于15，直接丢弃
+        if len(data) < 15:
+            return
         coord, shoot_data = cls.decode(data)
 
         if shoot_data is not None and cls.train_record_id is not None:
@@ -61,9 +64,7 @@ class ShootHandler:
         cls.train_record_id = None
 
     @classmethod
-    def decode(cls, raw: list) -> tuple[None, None] \
-                                  | tuple[dict[str, float | bool | int], ShootData] \
-                                  | tuple[dict[str, float | bool | int], None]:
+    def decode(cls, raw: list):
         """
         解码硬件数据\n
         .. image:: file:///D:/IdeaProjects/shoot-server/flaskr/doc/data_info_frame.png
@@ -202,4 +203,5 @@ if __name__ == '__main__':
     print(bytes(arr))
     ShootHandler.decode(arr)
 
+'16 10 10 01 56 24 15 56 14 18 46 55 17 00 88'
 '16 10 10 01 56 24 15 56 14 18 46 55 17 00 88'
