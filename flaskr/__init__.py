@@ -3,7 +3,7 @@ import logging
 import traceback
 
 from flasgger import Swagger
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 from .MyWebSocket.Server import WebSocketServer
@@ -75,6 +75,11 @@ def create_app(test_config=None):
         response = jsonify({'error': '405'})
         response.status_code = 405
         return response
+
+    @app.errorhandler(400)
+    def handle_error(e):
+        app.logger.error(f'Request to {request.path} failed with error: {"{}".format(e)}\n')
+        return jsonify(Result.fail(msg='非法参数'))
 
     @app.errorhandler(Exception)
     def handle_runtime_error(e):
