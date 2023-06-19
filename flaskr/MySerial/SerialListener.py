@@ -21,7 +21,7 @@ class SerialProtocol(asyncio.Protocol):
 
     def connection_made(self, transport):
         self.transport = transport
-        print('port opened', transport)
+        logger.info(f'port opened: {transport}')
 
     def data_received(self, data):
         # 处理接收到的数据
@@ -32,16 +32,17 @@ class SerialProtocol(asyncio.Protocol):
         else:
             self.data_cache.extend(data)
             self.count += 1
-            # retry times : 3
-            if len(self.data_cache) < 15 or self.count < 3:
-                self.pause_reading()
-            else:
-                print('data_cache: ', self.data_cache)
-                ShootHandler.on_recv(list(self.data_cache))
-                self.reset_count()
-                self.data_cache = None
+        # retry times : 3
+        if len(self.data_cache) < 15 and self.count < 3:
+            self.pause_reading()
+        else:
+            print('data_cache: ', self.data_cache)
+            ShootHandler.on_recv(list(self.data_cache))
+            self.reset_count()
+            self.data_cache = None
 
     def write_data(self, data: bytes):
+        print(list(data))
         self.transport.write(data)
 
     def connection_lost(self, exc):
@@ -71,7 +72,7 @@ handle = SerialProtocol()
 async def start_listen_serial():
     try:
         transport, protocol = await serial_asyncio.create_serial_connection(asyncio.get_event_loop(), lambda: handle,
-                                                                            '/dev/ttyUSB1', 9600)
+                                                                            '/dev/mySerial', 9600)
 
         while True:
             # 每隔30ms读取分片数据
